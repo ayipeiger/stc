@@ -309,26 +309,8 @@
 	    <span class="header-title"><?=$this->config->item('app_name')?></span>
 	</div>
 	<div class="content">
-        <div class="top-content">
-            <form id="formRegister" class="navbar-form" role="upload" method="post" action="<?=site_url('Firewall/save_register')?>">
-                <span>Register New Firewall Host :</span>
-                <div class="form-group">
-                    <input type="text" id="host" name="host" class="form-control" placeholder="Host">
-                </div>
-                <div class="form-group">
-                    <input type="text" id="port" name="port" class="form-control" placeholder="Port" style="width: 100px;">
-                </div>
-                <div class="form-group">
-                    <input type="checkbox" name="is_vdom" class="form-control">&nbsp;Use Vdom
-                </div>
-                <div class="form-group">
-                    <input type="text" name="vdom_name" class="form-control" placeholder="Vdom Name">
-                </div>
-                <button type="submit" id="btn-register" class="btn btn-sm btn-primary">Register Now</button>
-            </form>
-        </div>
 		<div class="main-content">
-        	<?php if(isset($arr_firewall) && is_array($arr_firewall) && count($arr_firewall) > 0): ?>
+        	<?php if(isset($arrFirewall) && is_array($arrFirewall) && count($arrFirewall) > 0): ?>
         		<table id="tableData" class="table table-striped table-bordered" style="font-size: 12px; width:100%;">
 					<thead>
 						<tr>
@@ -336,18 +318,20 @@
 							<th>Port</th>
 							<th>Use Vdom</th>
 							<th>Vdom Name</th>
-							<th>Delete</th>
+							<th colspan="3">Action</th>
 						</tr>
 					</thead>
 					<tbody>
-						<?php if(is_array($arr_firewall) && count($arr_firewall)>0): ?>
-							<?php foreach($arr_firewall as $row): ?>
+						<?php if(is_array($arrFirewall) && count($arrFirewall)>0): ?>
+							<?php foreach($arrFirewall as $firewallObj): ?>
 								<tr>
-									<td align="right"><?=$row['ip']?></td>
-									<td align="right"><?=$row['port']?></td>
-									<td align="center"><?=$row['is_vdom'] ? 'true' : 'false'?></td>
-									<td align="center"><?=$row['vdom_name'] && !empty($row['vdom_name']) ? $row['vdom_name'] : 'n/a'?></td>
-									<td align="center" style="color: #838383;"><button class="btn btn-sm btn-danger btn-delete" value="<?=$row['ip'].'|'.$row['port'].'|'.trim($row['is_vdom']).'|'.trim($row['vdom_name'])?>" style="width: 100px">Delete</button></td>
+									<td align="right"><?=$firewallObj->getIp()?></td>
+									<td align="right"><?=$firewallObj->getPort()?></td>
+									<td align="center"><?=$firewallObj->getIsVdom() ? 'true' : 'false'?></td>
+									<td align="center"><?=$firewallObj->getNameVdom() && !empty($firewallObj->getNameVdom()) ? $firewallObj->getNameVdom() : 'n/a'?></td>
+									<td align="center" style="color: #838383;"><button class="btn btn-sm btn-danger btn-delete" value="<?=$firewallObj->getIp().'|'.$firewallObj->getPort().'|'.$firewallObj->getIsVdom().'|'.$firewallObj->getNameVdom()?>" style="width: 100px">Delete</button></td>
+                                    <td></td>
+                                    <td></td>
 								</tr>
 							<?php endforeach?>
 						<?php endif; ?>
@@ -358,7 +342,7 @@
 							<th>Port</th>
 							<th>Use Vdom</th>
 							<th>Vdom name</th>
-							<th>Delete</th>
+							<th colspan="3">Action</th>
 						</tr>
 					</thead>
 				</table>

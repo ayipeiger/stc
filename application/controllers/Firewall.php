@@ -406,7 +406,6 @@ class Firewall extends CI_Controller {
     public function registered()
     {
         $data['arrFirewall'] = $this->firewall_model->findall_entry();
-        echo "<pre>"; print_r($data['arrFirewall']); echo "</pre>";
         $this->load->view('firewall/registered_page', $data);
     }
 
