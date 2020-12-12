@@ -106,6 +106,60 @@ class Firewall extends CI_Controller {
 		}		
 	}
 
+    public function save_file_address_object() {
+        // Var_dump($_POST);
+        // var_dump($_FILES);
+
+        $response = array();
+        try {
+            if(!isset($_FILES['file_address_object'])) {
+                throw new Exception("File not found");
+            }
+
+            $filename = basename($_FILES['file_address_object']['name']);
+            
+            $ext = substr($filename, strrpos($filename, '.') + 1);
+            var_dump($ext); var_dump($filename); 
+            if(!in_array($ext, array('xls', 'xlsx', 'csv'))) {
+                throw new Exception("File format not supported");
+            }
+
+            // $folder = APPPATH.'../uploads/';
+            // if (!is_dir($folder)) {
+            //     mkdir($folder);
+            // }
+            // $pathfile = $folder.'/'. basename($_FILES['file_address_object']['name']);
+            // move_uploaded_file($_FILES['file_address_object']['tmp_name'], $pathfile);
+
+            $this->load->library('excel');
+            $input_file_type = (($ext == 'xls') ? "Excel5" : ($ext=='xlsx' ? "Excel2007" : ""));
+            $objReader = PHPExcel_IOFactory::createReader($input_file_type);
+            $objReader->setReadDataOnly(true);
+            $objPHPExcel = $objReader->load($_FILES['file_address_object']['tmp_name']);
+
+            $objActiveWorksheet = $objPHPExcel->getSheet(0);
+            $highestRow = $objActiveWorksheet->getHighestRow(); // e.g. 10
+            $highestColumn = $objActiveWorksheet->getHighestColumn(); // e.g 'F'
+
+            $this->load->library('FirewallAddressObject');
+            for($counter_row = 2; $counter_row <= $highestRow; $counter_row++) {
+                $firewallAddressObj = new FirewallAddressObject($this->input->post('ip_address_object'), $objActiveWorksheet->getCell("A".$counter_row)->getValue(), $objActiveWorksheet->getCell("B".$counter_row)->getValue(), $objActiveWorksheet->getCell("C".$counter_row)->getValue(), $objActiveWorksheet->getCell("D".$counter_row)->getValue());
+                
+            }
+            unlink($pathfile);
+            $response['status'] = true;
+        } catch (Exception $e) {
+            $response['status'] = false;
+            $response['status_desc'] = $e->getMessage();
+        }
+        
+        echo json_encode($response);
+    }
+
+    public function save_file_service_object() {
+
+    }
+
 	public function parsed_excel()
 	{
 		$data = array();
@@ -407,6 +461,22 @@ class Firewall extends CI_Controller {
     {
         $data['arrFirewall'] = $this->firewall_model->findall_entry();
         $this->load->view('firewall/registered_page', $data);
+    }
+
+    public function delete_registered()
+    {
+        $firewallObj = new FirewallObject($this->input->post('ip'));
+        $this->db->trans_start();
+        $this->firewall_model->delete_entry($firewallObj);
+        $this->firewall_model->delete_all_registered_firewall_addresses($firewallObj);
+        $this->firewall_model->delete_all_registered_firewall_services($firewallObj); 
+        $this->db->trans_complete();
+        if($this->db->trans_status() === TRUE) {
+            $response = array('status' => true, 'status_desc' => 'success');
+        } else {
+            $response = array('status' => false, 'status_desc' => 'failure');
+        }
+        echo json_encode($response);
     }
 
 	public function list_register()

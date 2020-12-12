@@ -19,6 +19,14 @@
 		background: #f5f5f5;
 		font-family: 'Varela Round', sans-serif;
 	}
+    .btn-stc {
+        background: #703081;
+        border: none;
+        line-height: normal;
+    }
+    .btn-stc:hover, .btn-stc:focus {
+        background: #5a1d6b;
+    }
     .header {
         color: #434343;
         border-radius: 1px;
@@ -246,33 +254,146 @@
 </style>
 <script type="text/javascript">
 	$(document).ready(function(){
+        var divbar = $('#progress');
+        var bar = $('#progress-bar');
+        var percent = $('#progress-percent');
+        var result = $('#response');
+
 		$('#tableData').DataTable();
 
 		$('.content').off('click', '.btn-delete');
 		$('.content').on('click', '.btn-delete', function(){
-			if(confirm('Are you sure to delete this fw?')) {
-				var arrObj = $(this).val().split('|');
+			if(confirm('Are you sure to delete this firewall?')) {
+				var val = $(this).val();
+                var row = $(this).parents('tr:first');
+
 				$.ajax({
-					url: '<?=site_url('Firewall/delete_register')?>',
+					url: '<?=site_url('Firewall/delete_registered')?>',
 					type: 'post',
 					dataType: 'json',
-					data: 'host='+arrObj[0]+'&port='+arrObj[1]+'&is_vdom='+arrObj[2]+'&vdom_name='+arrObj[3],
+					data: 'ip='+val,
 					beforeSend: function() {
 						$('#ajax-loader').show();
 					},
 					error: function() {
 						$('#ajax-loader').hide();
 					},
-					success: function(data) {
-						if(data.result) {
-							$('#formRegister').find('input[type=text], input[type=checkbox]').val('').prop('checked', false);
-						}
+					success: function(response) {
+                        console.log(response);
+						if(response.code) {
+                            row.remove();
+                        }
 						$('#ajax-loader').hide();
 					}
 				});
 			}
 			return false;
 		});
+
+        $('.content').off('click', '.btn-upload-address');
+        $('.content').on('click', '.btn-upload-address', function(){
+            if(confirm('Do you want to upload object address for this firewall?')) {
+                $('.bottom-content').show();
+                $('#form-upload-address').show();
+                $('#ip-address-object').val($(this).val());
+            }
+            return false;
+        });
+
+        $('.content').off('click', '.btn-show-address');
+        $('.content').on('click', '.btn-show-address', function(){
+            if(confirm('Are you sure to show object address for this firewall?')) {
+                $('#tableData').remove();
+                var val = $(this).val();
+                var row = $(this).parents('tr:first');
+
+                $.ajax({
+                    url: '<?=site_url('Firewall/delete_registered')?>',
+                    type: 'post',
+                    dataType: 'json',
+                    data: 'ip='+val,
+                    beforeSend: function() {
+                        $('#ajax-loader').show();
+                    },
+                    error: function() {
+                        $('#ajax-loader').hide();
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        if(response.code) {
+                            row.remove();
+                        }
+                        $('#ajax-loader').hide();
+                    }
+                });
+            }
+            return false;
+        });
+
+        $('.content').off('click', '.btn-upload-service');
+        $('.content').on('click', '.btn-upload-service', function(){
+            if(confirm('Do you want to upload object service for this firewall?')) {
+                
+            }
+            return false;
+        });
+
+        $('.content').off('click', '.btn-show-service');
+        $('.content').on('click', '.btn-show-service', function(){
+            if(confirm('Are you sure to show object service for this firewall?')) {
+                $('#tableData').remove();
+                var val = $(this).val();
+                var row = $(this).parents('tr:first');
+
+                $.ajax({
+                    url: '<?=site_url('Firewall/delete_registered')?>',
+                    type: 'post',
+                    dataType: 'json',
+                    data: 'ip='+val,
+                    beforeSend: function() {
+                        $('#ajax-loader').show();
+                    },
+                    error: function() {
+                        $('#ajax-loader').hide();
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        if(response.code) {
+                            row.remove();
+                        }
+                        $('#ajax-loader').hide();
+                    }
+                });
+            }
+            return false;
+        });
+
+        $('#form-upload-address,#form-upload-service').ajaxForm({
+            beforeSend: function() {
+                divbar.show();
+                result.hide();
+                result.empty();
+                var percentVal = '0%';
+                bar.width(percentVal)
+                percent.html(percentVal);
+            },
+            uploadProgress: function(event, position, total, percentComplete) {
+                var percentVal = percentComplete + '%';
+                bar.width(percentVal)
+                percent.html(percentVal);
+            },
+            success: function() {
+                var percentVal = '100%';
+                bar.width(percentVal)
+                percent.html(percentVal);
+            },
+            complete: function(xhr) {
+                result.html(xhr.responseText);
+                result.show();
+                bar.hide();
+                percent.hide();
+            }
+        });
 
 		function reloadList() {
 			$.ajax({
@@ -305,8 +426,17 @@
         </div>
     </div>
     <div class="header">
-	    <a href="<?=site_url('Firewall/connection')?>"><img src="<?=base_url('uploads/stc_logo.jpg')?>" style="width: 75px;"/></a>
-	    <span class="header-title"><?=$this->config->item('app_name')?></span>
+	    <div class="row">
+            <div class="col-lg-8 col-md-8 text-left">
+                <a href="<?=site_url('Firewall/connection')?>"><img src="<?=base_url('uploads/stc_logo.jpg')?>" style="width: 75px;"/></a>
+                <span class="header-title"><?=$this->config->item('app_name')?></span>
+            </div>
+            <div class="col-lg-4 col-md-4 text-right">
+                <a href="<?=site_url('Firewall/register')?>" id="btn-show-registered-fw" class="btn-stc btn btn-info btn-sm">
+                    <span class="glyphicon glyphicon-fire" aria-hidden="true"></span> New Register
+                </a>
+            </div>
+        </div>
 	</div>
 	<div class="content">
 		<div class="main-content">
@@ -318,7 +448,9 @@
 							<th>Port</th>
 							<th>Use Vdom</th>
 							<th>Vdom Name</th>
-							<th colspan="3">Action</th>
+							<th align="center">Addresses</th>
+                            <th align="center">Services</th>
+                            <th align="center">Delete</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -329,9 +461,19 @@
 									<td align="right"><?=$firewallObj->getPort()?></td>
 									<td align="center"><?=$firewallObj->getIsVdom() ? 'true' : 'false'?></td>
 									<td align="center"><?=$firewallObj->getNameVdom() && !empty($firewallObj->getNameVdom()) ? $firewallObj->getNameVdom() : 'n/a'?></td>
-									<td align="center" style="color: #838383;"><button class="btn btn-sm btn-danger btn-delete" value="<?=$firewallObj->getIp().'|'.$firewallObj->getPort().'|'.$firewallObj->getIsVdom().'|'.$firewallObj->getNameVdom()?>" style="width: 100px">Delete</button></td>
-                                    <td></td>
-                                    <td></td>
+									<td align="center">
+                                        <div class="btn-group" role="group" aria-label="Basic example">
+                                            <button class="btn btn-sm btn-success btn-upload-address" value="<?=$firewallObj->getIp()?>"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Upload</button>
+                                            <button class="btn btn-sm btn-success btn-show-address" value="<?=$firewallObj->getIp()?>"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Show</button>
+                                        </div>
+                                    </td>
+                                    <td align="center">
+                                        <div class="btn-group" role="group" aria-label="Basic example">
+                                            <button class="btn btn-sm btn-success btn-upload-service" value="<?=$firewallObj->getIp()?>"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Upload</button>
+                                            <button class="btn btn-sm btn-success btn-show-service" value="<?=$firewallObj->getIp()?>"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Show</button>
+                                        </div>
+                                    </td>
+                                    <td align="center"><button class="btn btn-sm btn-danger btn-delete" value="<?=$firewallObj->getIp()?>"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>  Delete</button></td>
 								</tr>
 							<?php endforeach?>
 						<?php endif; ?>
@@ -342,13 +484,40 @@
 							<th>Port</th>
 							<th>Use Vdom</th>
 							<th>Vdom name</th>
-							<th colspan="3">Action</th>
+                            <th align="center">Addresses</th>
+                            <th align="center">Services</th>
+                            <th align="center">Delete</th>
 						</tr>
 					</thead>
 				</table>
         	<?php else: ?>
 
         	<?php endif; ?>
+        </div>
+        <div class="bottom-content" style="display: none;">
+            <form id="form-upload-address" class="navbar-form" role="upload" method="post" enctype="multipart/form-data" action="<?=site_url('Firewall/save_file_address_object')?>" style="display: none;">
+                <span>Please input your firewall addresses file here :</span>
+                <div class="form-group">
+                    <input type="hidden" id="ip-address-object" name="ip_address_object" value="">
+                    <input type="file" name="file_address_object" class="form-control" placeholder="File Address Object" style="height: auto; width: 470px;">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit File</button>
+            </form>
+            <form id="form-upload-service" class="navbar-form" role="upload" method="post" enctype="multipart/form-data" action="<?=site_url('Firewall/save_file_service_object')?>" style="display: none;">
+                <span>Please input your firewall services file here :</span>
+                <div class="form-group">
+                    <input type="hidden" class="ip-service-object" name="ip_service_object" value="">
+                    <input type="file" name="file_service_object" class="form-control" placeholder="File Service Object" style="height: auto; width: 470px;">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit File</button>
+            </form>
+            <div id="progress" class="progress" style="margin-bottom: 0px; display: none;">
+                <div id="progress-bar" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                    <span id="progress-percent">0%</span>
+                </div>
+            </div>
+            <div id="response" style="font-size: 11px;">
+            </div>
         </div>
     </div>
 </body>

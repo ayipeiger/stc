@@ -59,4 +59,14 @@ class Firewall_model extends CI_Model {
 		$affectedRow = $this->db->delete('firewall', array('ip' => $firewallObject->getIp()));
 		return boolval($affectedRow);
 	}
+
+	public function delete_all_registered_firewall_addresses($firewallObject) {
+		$affectedRow = $this->db->delete('firewall_object_addresses', array('ip' => $firewallObject->getIp()));
+		return boolval($affectedRow);
+	}
+
+	public function delete_all_registered_firewall_services($firewallObject) {
+		$affectedRow = $this->db->delete('firewall_object_services', array('ip' => $firewallObject->getIp()));
+		return boolval($affectedRow);
+	}
 }
