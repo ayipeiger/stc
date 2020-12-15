@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class FirewallPortObject {
+class FirewallServiceObject {
 
 	private $ip;
 	private $portname;
@@ -16,7 +16,7 @@ class FirewallPortObject {
 	 * @param    $protocol   
 	 * @param    $portAddress   
 	 */
-	public function __construct($ip, $portname, $protocol, $portAddress)
+	public function __construct($ip = null, $portname = null, $protocol = null, $portAddress = null)
 	{
 		$this->ip = $ip;
 		$this->portname = $portname;

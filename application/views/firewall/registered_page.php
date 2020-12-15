@@ -5,14 +5,14 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>STC </title>
-<link rel="stylesheet" href="<?=base_url('uploads/css/font.css')?>">
-<link rel="stylesheet" href="<?=base_url('uploads/css/bootstrap.min.css')?>">
-<link rel="stylesheet" href="<?=base_url('uploads/css/dataTables.bootstrap.min.css')?>">
-<script src="<?=base_url('uploads/js/jquery-3.3.1.js')?>"></script>
-<script src="<?=base_url('uploads/js/bootstrap.min.js')?>"></script>
-<script src="<?=base_url('uploads/js/jquery.dataTables.min.js')?>"></script>
-<script src="<?=base_url('uploads/js/dataTables.bootstrap.min.js')?>"></script>
-<script src="<?=base_url('uploads/js/jquery.form.min.js')?>"></script>
+<link rel="stylesheet" href="<?=base_url('assets/css/font.css')?>">
+<link rel="stylesheet" href="<?=base_url('assets/css/bootstrap.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('assets/css/dataTables.bootstrap.min.css')?>">
+<script src="<?=base_url('assets/js/jquery-3.3.1.js')?>"></script>
+<script src="<?=base_url('assets/js/bootstrap.min.js')?>"></script>
+<script src="<?=base_url('assets/js/jquery.dataTables.min.js')?>"></script>
+<script src="<?=base_url('assets/js/dataTables.bootstrap.min.js')?>"></script>
+<script src="<?=base_url('assets/js/jquery.form.min.js')?>"></script>
 <style type="text/css">
 	body {
         color: #999;
@@ -257,7 +257,7 @@
         var divbar = $('#progress');
         var bar = $('#progress-bar');
         var percent = $('#progress-percent');
-        var result = $('#response');
+        var response = $('#response');
 
 		$('#tableData').DataTable();
 
@@ -279,8 +279,7 @@
 						$('#ajax-loader').hide();
 					},
 					success: function(response) {
-                        console.log(response);
-						if(response.code) {
+						if(response.status) {
                             row.remove();
                         }
 						$('#ajax-loader').hide();
@@ -290,12 +289,21 @@
 			return false;
 		});
 
+        $('.content').off('click', '.btn-show-template');
+        $('.content').on('click', '.btn-show-template', function(){
+            if(confirm('Are you sure to show template rule for this firewall?')) {
+                window.open("<?=site_url('Firewall/registered_template')?>?ip="+$(this).val(),"_self");
+            }
+            return false;
+        });
+
         $('.content').off('click', '.btn-upload-address');
         $('.content').on('click', '.btn-upload-address', function(){
             if(confirm('Do you want to upload object address for this firewall?')) {
                 $('.bottom-content').show();
                 $('#form-upload-address').show();
                 $('#ip-address-object').val($(this).val());
+                $('#response').hide().empty().val('');
             }
             return false;
         });
@@ -303,37 +311,18 @@
         $('.content').off('click', '.btn-show-address');
         $('.content').on('click', '.btn-show-address', function(){
             if(confirm('Are you sure to show object address for this firewall?')) {
-                $('#tableData').remove();
-                var val = $(this).val();
-                var row = $(this).parents('tr:first');
-
-                $.ajax({
-                    url: '<?=site_url('Firewall/delete_registered')?>',
-                    type: 'post',
-                    dataType: 'json',
-                    data: 'ip='+val,
-                    beforeSend: function() {
-                        $('#ajax-loader').show();
-                    },
-                    error: function() {
-                        $('#ajax-loader').hide();
-                    },
-                    success: function(response) {
-                        console.log(response);
-                        if(response.code) {
-                            row.remove();
-                        }
-                        $('#ajax-loader').hide();
-                    }
-                });
+                window.open("<?=site_url('Firewall/registered_address')?>?ip="+$(this).val(),"_self");
             }
             return false;
         });
 
         $('.content').off('click', '.btn-upload-service');
         $('.content').on('click', '.btn-upload-service', function(){
-            if(confirm('Do you want to upload object service for this firewall?')) {
-                
+             if(confirm('Do you want to upload object address for this firewall?')) {
+                $('.bottom-content').show();
+                $('#form-upload-service').show();
+                $('#ip-services-object').val($(this).val());
+                $('#response').hide().empty().val('');
             }
             return false;
         });
@@ -341,29 +330,7 @@
         $('.content').off('click', '.btn-show-service');
         $('.content').on('click', '.btn-show-service', function(){
             if(confirm('Are you sure to show object service for this firewall?')) {
-                $('#tableData').remove();
-                var val = $(this).val();
-                var row = $(this).parents('tr:first');
-
-                $.ajax({
-                    url: '<?=site_url('Firewall/delete_registered')?>',
-                    type: 'post',
-                    dataType: 'json',
-                    data: 'ip='+val,
-                    beforeSend: function() {
-                        $('#ajax-loader').show();
-                    },
-                    error: function() {
-                        $('#ajax-loader').hide();
-                    },
-                    success: function(response) {
-                        console.log(response);
-                        if(response.code) {
-                            row.remove();
-                        }
-                        $('#ajax-loader').hide();
-                    }
-                });
+                window.open("<?=site_url('Firewall/registered_service')?>?ip="+$(this).val(),"_self");
             }
             return false;
         });
@@ -371,8 +338,6 @@
         $('#form-upload-address,#form-upload-service').ajaxForm({
             beforeSend: function() {
                 divbar.show();
-                result.hide();
-                result.empty();
                 var percentVal = '0%';
                 bar.width(percentVal)
                 percent.html(percentVal);
@@ -388,10 +353,25 @@
                 percent.html(percentVal);
             },
             complete: function(xhr) {
-                result.html(xhr.responseText);
-                result.show();
-                bar.hide();
-                percent.hide();
+                $('#form-upload-address').hide();
+                $('#form-upload-service').hide();
+                $('#file-address-object').val('');
+                $('#file-service-object').val('');
+
+                divbar.hide();
+                bar.width('0%');
+                percent.html('');
+
+                response.empty();
+                var resultObj = JSON.parse(xhr.responseText);
+                if(resultObj.status) {
+                    response.removeClass('alert-danger').addClass('alert-success');
+                    response.html(resultObj.status_desc);
+                } else {
+                    response.removeClass('alert-success').addClass('alert-danger');
+                    response.html(resultObj.status_desc);
+                }
+                response.show();
             }
         });
 
@@ -428,7 +408,7 @@
     <div class="header">
 	    <div class="row">
             <div class="col-lg-8 col-md-8 text-left">
-                <a href="<?=site_url('Firewall/connection')?>"><img src="<?=base_url('uploads/stc_logo.jpg')?>" style="width: 75px;"/></a>
+                <a href="<?=site_url('Firewall/connection')?>"><img src="<?=base_url('assets/stc_logo.jpg')?>" style="width: 75px;"/></a>
                 <span class="header-title"><?=$this->config->item('app_name')?></span>
             </div>
             <div class="col-lg-4 col-md-4 text-right">
@@ -448,6 +428,7 @@
 							<th>Port</th>
 							<th>Use Vdom</th>
 							<th>Vdom Name</th>
+                            <th align="center">Template</th>
 							<th align="center">Addresses</th>
                             <th align="center">Services</th>
                             <th align="center">Delete</th>
@@ -462,6 +443,9 @@
 									<td align="center"><?=$firewallObj->getIsVdom() ? 'true' : 'false'?></td>
 									<td align="center"><?=$firewallObj->getNameVdom() && !empty($firewallObj->getNameVdom()) ? $firewallObj->getNameVdom() : 'n/a'?></td>
 									<td align="center">
+                                        <button class="btn btn-sm btn-warning btn-show-template" value="<?=$firewallObj->getIp()?>"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> View</button>
+                                    </td>
+                                    <td align="center">
                                         <div class="btn-group" role="group" aria-label="Basic example">
                                             <button class="btn btn-sm btn-success btn-upload-address" value="<?=$firewallObj->getIp()?>"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Upload</button>
                                             <button class="btn btn-sm btn-success btn-show-address" value="<?=$firewallObj->getIp()?>"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Show</button>
@@ -499,15 +483,15 @@
                 <span>Please input your firewall addresses file here :</span>
                 <div class="form-group">
                     <input type="hidden" id="ip-address-object" name="ip_address_object" value="">
-                    <input type="file" name="file_address_object" class="form-control" placeholder="File Address Object" style="height: auto; width: 470px;">
+                    <input type="file" id="file-address-object" name="file_address_object" class="form-control" placeholder="File Address Object" style="height: auto; width: 470px;">
                 </div>
                 <button type="submit" class="btn btn-primary">Submit File</button>
             </form>
             <form id="form-upload-service" class="navbar-form" role="upload" method="post" enctype="multipart/form-data" action="<?=site_url('Firewall/save_file_service_object')?>" style="display: none;">
                 <span>Please input your firewall services file here :</span>
                 <div class="form-group">
-                    <input type="hidden" class="ip-service-object" name="ip_service_object" value="">
-                    <input type="file" name="file_service_object" class="form-control" placeholder="File Service Object" style="height: auto; width: 470px;">
+                    <input type="hidden" id="ip-services-object" name="ip_service_object" value="">
+                    <input type="file" id="file-service-object" name="file_service_object" class="form-control" placeholder="File Service Object" style="height: auto; width: 470px;">
                 </div>
                 <button type="submit" class="btn btn-primary">Submit File</button>
             </form>
@@ -516,7 +500,7 @@
                     <span id="progress-percent">0%</span>
                 </div>
             </div>
-            <div id="response" style="font-size: 11px;">
+            <div id="response" class="alert alert-danger" role="alert" style="margin-bottom: 0; display: none;">
             </div>
         </div>
     </div>

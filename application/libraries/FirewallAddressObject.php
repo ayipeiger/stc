@@ -18,7 +18,7 @@ class FirewallAddressObject {
 	 * @param    $type   
 	 * @param    $address   
 	 */
-	public function __construct($ip, $ipname, $location, $type, $address)
+	public function __construct($ip = null, $ipname = null, $location = null, $type = null, $address = null)
 	{
 		$this->ip = $ip;
 		$this->ipname = $ipname;

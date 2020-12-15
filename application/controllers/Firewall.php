@@ -7,8 +7,9 @@ class Firewall extends CI_Controller {
     {
         parent::__construct();
         $this->load->library('session');
-        $this->load->library('firewallobject');
         $this->load->model('firewall_model');
+        $this->load->model('firewalladdress_model');
+        $this->load->model('firewallservice_model');
     }
 
 	public function connection()
@@ -107,9 +108,6 @@ class Firewall extends CI_Controller {
 	}
 
     public function save_file_address_object() {
-        // Var_dump($_POST);
-        // var_dump($_FILES);
-
         $response = array();
         try {
             if(!isset($_FILES['file_address_object'])) {
@@ -119,18 +117,11 @@ class Firewall extends CI_Controller {
             $filename = basename($_FILES['file_address_object']['name']);
             
             $ext = substr($filename, strrpos($filename, '.') + 1);
-            var_dump($ext); var_dump($filename); 
-            if(!in_array($ext, array('xls', 'xlsx', 'csv'))) {
+            
+            if(!in_array($ext, array('xls', 'xlsx'))) {
                 throw new Exception("File format not supported");
             }
-
-            // $folder = APPPATH.'../uploads/';
-            // if (!is_dir($folder)) {
-            //     mkdir($folder);
-            // }
-            // $pathfile = $folder.'/'. basename($_FILES['file_address_object']['name']);
-            // move_uploaded_file($_FILES['file_address_object']['tmp_name'], $pathfile);
-
+            
             $this->load->library('excel');
             $input_file_type = (($ext == 'xls') ? "Excel5" : ($ext=='xlsx' ? "Excel2007" : ""));
             $objReader = PHPExcel_IOFactory::createReader($input_file_type);
@@ -141,13 +132,25 @@ class Firewall extends CI_Controller {
             $highestRow = $objActiveWorksheet->getHighestRow(); // e.g. 10
             $highestColumn = $objActiveWorksheet->getHighestColumn(); // e.g 'F'
 
-            $this->load->library('FirewallAddressObject');
+            if($highestRow <= 2) {
+                throw new Exception("File excel is empty");
+            }
+
+            $affectedRow = $this->firewalladdress_model->truncate_entry($this->input->post('ip_address_object'));
+
+            $arrFirewalAddressObj = array();
             for($counter_row = 2; $counter_row <= $highestRow; $counter_row++) {
                 $firewallAddressObj = new FirewallAddressObject($this->input->post('ip_address_object'), $objActiveWorksheet->getCell("A".$counter_row)->getValue(), $objActiveWorksheet->getCell("B".$counter_row)->getValue(), $objActiveWorksheet->getCell("C".$counter_row)->getValue(), $objActiveWorksheet->getCell("D".$counter_row)->getValue());
-                
+                $arrFirewalAddressObj[] = $firewallAddressObj;
             }
-            unlink($pathfile);
+            $affectedRow = $this->firewalladdress_model->insert_batch_entry($arrFirewalAddressObj);
+
+            if($affectedRow <= 0) {
+                throw new Exception("Insert to database failed!");
+            }
+
             $response['status'] = true;
+            $response['status_desc'] = "Success insert ".count($arrFirewalAddressObj)." data.";
         } catch (Exception $e) {
             $response['status'] = false;
             $response['status_desc'] = $e->getMessage();
@@ -157,7 +160,55 @@ class Firewall extends CI_Controller {
     }
 
     public function save_file_service_object() {
+        $response = array();
+        try {
+            if(!isset($_FILES['file_service_object'])) {
+                throw new Exception("File not found");
+            }
 
+            $filename = basename($_FILES['file_service_object']['name']);
+            
+            $ext = substr($filename, strrpos($filename, '.') + 1);
+            
+            if(!in_array($ext, array('xls', 'xlsx'))) {
+                throw new Exception("File format not supported");
+            }
+
+            $this->load->library('excel');
+            $input_file_type = (($ext == 'xls') ? "Excel5" : ($ext=='xlsx' ? "Excel2007" : ""));
+            $objReader = PHPExcel_IOFactory::createReader($input_file_type);
+            $objReader->setReadDataOnly(true);
+            $objPHPExcel = $objReader->load($_FILES['file_service_object']['tmp_name']);
+
+            $objActiveWorksheet = $objPHPExcel->getSheet(0);
+            $highestRow = $objActiveWorksheet->getHighestRow(); // e.g. 10
+            $highestColumn = $objActiveWorksheet->getHighestColumn(); // e.g 'F'
+            
+            if($highestRow <= 2) {
+                throw new Exception("File excel is empty");
+            }
+
+            $affectedRow = $this->firewallservice_model->truncate_entry($this->input->post('ip_service_object'));
+
+            $arrFirewalServicesObj = array();
+            for($counter_row = 2; $counter_row <= $highestRow; $counter_row++) {
+                $firewallServicesObj = new FirewallServiceObject($this->input->post('ip_service_object'), $objActiveWorksheet->getCell("A".$counter_row)->getValue(), $objActiveWorksheet->getCell("B".$counter_row)->getValue(), $objActiveWorksheet->getCell("C".$counter_row)->getValue());
+                $arrFirewalServicesObj[] = $firewallServicesObj;
+            }
+            $affectedRow = $this->firewallservice_model->insert_batch_entry($arrFirewalServicesObj);
+
+            if($affectedRow <= 0) {
+                throw new Exception("Insert to database failed!");
+            }
+
+            $response['status'] = true;
+            $response['status_desc'] = "Success insert ".count($arrFirewalServicesObj)." data.";
+        } catch (Exception $e) {
+            $response['status'] = false;
+            $response['status_desc'] = $e->getMessage();
+        }
+        
+        echo json_encode($response);
     }
 
 	public function parsed_excel()
@@ -448,7 +499,6 @@ class Firewall extends CI_Controller {
 
 	public function register()
 	{
-        
 		$data = array();
         if($this->input->post('submit') === 'register') {
             $firewallObj = new FirewallObject($this->input->post('firewall'), $this->input->post('port'), $this->input->post('vdom')<>'' ? true : false, $this->input->post('vdom'), $this->input->post('setup_command_template'), $this->input->post('spesial_command_template'));
@@ -463,13 +513,34 @@ class Firewall extends CI_Controller {
         $this->load->view('firewall/registered_page', $data);
     }
 
+    public function registered_template()
+    {
+        $ip = $this->input->get('ip');
+        $data['firewall'] = $this->firewall_model->find_single_entry($ip);
+        $this->load->view('firewall/registered_template_page', $data);
+    }
+
+    public function registered_address()
+    {
+        $ip = $this->input->get('ip');
+        $data['arrFirewallAddress'] = $this->firewalladdress_model->find_all_registered($ip);
+        $this->load->view('firewall/registered_address_page', $data);
+    }
+
+    public function registered_service()
+    {
+        $ip = $this->input->get('ip');
+        $data['arrFirewallService'] = $this->firewallservice_model->find_all_registered($ip);
+        $this->load->view('firewall/registered_service_page', $data);
+    }
+
     public function delete_registered()
     {
         $firewallObj = new FirewallObject($this->input->post('ip'));
         $this->db->trans_start();
-        $this->firewall_model->delete_entry($firewallObj);
-        $this->firewall_model->delete_all_registered_firewall_addresses($firewallObj);
-        $this->firewall_model->delete_all_registered_firewall_services($firewallObj); 
+        $affectedRow = $this->firewall_model->delete_entry($firewallObj);
+        $affectedRow = $this->firewalladdress_model->truncate_entry($firewallObj->getIp());
+        $affectedRow = $this->firewallservice_model->truncate_entry($firewallObj->getIp());
         $this->db->trans_complete();
         if($this->db->trans_status() === TRUE) {
             $response = array('status' => true, 'status_desc' => 'success');

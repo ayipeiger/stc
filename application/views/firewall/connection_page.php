@@ -5,12 +5,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>STC </title>
-<link rel="stylesheet" href="<?=base_url('uploads/css/font.css')?>">
-<link rel="stylesheet" href="<?=base_url('uploads/css/bootstrap.min.css')?>">
-<script src="<?=base_url('uploads/js/jquery-3.3.1.js')?>"></script>
-<script src="<?=base_url('uploads/js/bootstrap.min.js')?>"></script>
-<script src="<?=base_url('uploads/js/bootstrap-autocomplete.min.js')?>"></script>
-<script src="<?=base_url('uploads/js/jquery.form.min.js')?>"></script>
+<link rel="stylesheet" href="<?=base_url('assets/css/font.css')?>">
+<link rel="stylesheet" href="<?=base_url('assets/css/bootstrap.min.css')?>">
+<script src="<?=base_url('assets/js/jquery-3.3.1.js')?>"></script>
+<script src="<?=base_url('assets/js/bootstrap.min.js')?>"></script>
+<script src="<?=base_url('assets/js/bootstrap-autocomplete.min.js')?>"></script>
+<script src="<?=base_url('assets/js/jquery.form.min.js')?>"></script>
 <style type="text/css">
     body {
         color: #999;
@@ -24,6 +24,14 @@
 	.form-control:focus {
 		border-color: #4aba70; 
 	}
+    .btn-stc {
+        background: #703081;
+        border: none;
+        line-height: normal;
+    }
+    .btn-stc:hover, .btn-stc:focus {
+        background: #5a1d6b;
+    }
     .header {
         color: #434343;
         border-radius: 1px;
@@ -146,8 +154,17 @@
 </head>
 <body>
     <div class="header">
-        <a href="<?=site_url('Firewall/connection')?>"><img src="<?=base_url('uploads/stc_logo.jpg')?>" style="width: 75px;"/></a>
-        <span class="header-title"><?=$this->config->item('app_name')?></span>
+        <div class="row">
+            <div class="col-lg-8 col-md-8 text-left">
+                <a href="<?=site_url('Firewall/connection')?>"><img src="<?=base_url('assets/stc_logo.jpg')?>" style="width: 75px;"/></a>
+                <span class="header-title"><?=$this->config->item('app_name')?></span>
+            </div>
+            <div class="col-lg-4 col-md-4 text-right">
+                <a href="<?=site_url('Firewall/registered')?>" id="btn-show-registered-fw" class="btn-stc btn btn-info btn-sm">
+                    <span class="glyphicon glyphicon-fire" aria-hidden="true"></span> Show Registered
+                </a>
+            </div>
+        </div>
     </div>
     <div class="login-form">
         <form method="post" accept-charset="utf-8" action="<?=site_url('Firewall/connection')?>">
