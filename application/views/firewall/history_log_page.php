@@ -274,7 +274,7 @@
                 <span class="header-title"><?=$this->config->item('app_name')?></span>
             </div>
             <div class="col-lg-4 col-md-4 text-right">
-                <span style="margin-right: 15px; font-size: 12px;">Logged As <?=$this->session->userdata('firewall_hostname')?></span>
+                <span style="margin-right: 15px; font-size: 12px;">Logged As <?=$this->session->userdata('firewall_ip')?></span>
                 <button type="button" id="btn-logout" class="btn btn-info btn-sm">
                     <span class="glyphicon glyphicon-off" aria-hidden="true"></span> Disconnect
                 </button>

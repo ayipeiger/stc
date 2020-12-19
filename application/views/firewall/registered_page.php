@@ -475,7 +475,7 @@
 					</thead>
 				</table>
         	<?php else: ?>
-
+                
         	<?php endif; ?>
         </div>
         <div class="bottom-content" style="display: none;">

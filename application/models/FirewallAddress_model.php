@@ -18,12 +18,13 @@ class FirewallAddress_model extends CI_Model {
 		return $data;
 	}
 
-	public function find_by_parameter($ip) {
+	public function find_by_address($ip, $address) {
 		$this->db->select('ip, ipname, location, type, address');
 		$this->db->where('ip', $ip);
+		$this->db->where('address', $address);
 		$resultSet = $this->db->get('firewall_object_addresses');
-
-		$data = new StdClass();
+		
+		$data = new FirewallAddressObject();
 		if($resultSet->num_rows() > 0) {
 			$row = $resultSet->row();
 			$data = new FirewallAddressObject($row->ip, $row->ipname, $row->location, $row->type, $row->address);

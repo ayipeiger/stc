@@ -18,16 +18,17 @@ class FirewallService_model extends CI_Model {
 		return $data;
 	}
 
-	public function find_by_parameter($ip) {
+	public function find_by_portaddress($ip, $protocol, $portaddress) {
 		$this->db->select('ip, portname, protocol, portaddress');
 		$this->db->where('ip', $ip);
+		$this->db->where('protocol', $protocol);
+		$this->db->where('portaddress', $portaddress);
 		$resultSet = $this->db->get('firewall_object_services');
 
-		$data = array();
+		$data = new StdClass();
 		if($resultSet->num_rows() > 0) {
-			foreach ($resultSet->result() as $key => $row) {
-				$data[] = new FirewallServiceObject($row->ip, $row->portname, $row->protocol, $row->portaddress);
-			}
+			$row = $resultSet->row();
+			$data = new FirewallServiceObject($row->ip, $row->portname, $row->protocol, $row->portaddress);
 		}
 		
 		return $data;

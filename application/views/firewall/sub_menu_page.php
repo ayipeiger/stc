@@ -5,12 +5,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>STC</title>
-<link rel="stylesheet" href="<?=base_url('uploads/css/font.css')?>">
-<link rel="stylesheet" href="<?=base_url('uploads/css/bootstrap.min.css')?>">
-<script src="<?=base_url('uploads/js/jquery-3.3.1.js')?>"></script>
-<script src="<?=base_url('uploads/js/bootstrap.min.js')?>"></script>
-<script src="<?=base_url('uploads/js/bootstrap-autocomplete.min.js')?>"></script>
-<script src="<?=base_url('uploads/js/jquery.form.min.js')?>"></script>
+<link rel="stylesheet" href="<?=base_url('assets/css/font.css')?>">
+<link rel="stylesheet" href="<?=base_url('assets/css/bootstrap.min.css')?>">
+<script src="<?=base_url('assets/js/jquery-3.3.1.js')?>"></script>
+<script src="<?=base_url('assets/js/bootstrap.min.js')?>"></script>
+<script src="<?=base_url('assets/js/bootstrap-autocomplete.min.js')?>"></script>
+<script src="<?=base_url('assets/js/jquery.form.min.js')?>"></script>
 <style type="text/css">
     body {
         color: #999;
@@ -68,20 +68,36 @@
 <script type="text/javascript">
     
     $(document).ready(function(){
-        
+
+        $('#btn-logout').click(function(){
+            if(confirm('Are you sure to disconnect this machine?')) {
+                document.location = '<?=site_url('Firewall/disconnect')?>';
+            }
+        });
+
     });
 
 </script>
 </head>
 <body>
 <div class="header">
-    <a href="<?=site_url('Firewall/connection')?>"><img src="<?=base_url('uploads/stc_logo.jpg')?>" style="width: 75px;"/></a>
-    <span class="header-title"><?=$this->config->item('app_name')?></span>
+    <div class="row">
+        <div class="col-lg-8 col-md-8 text-left">
+            <a href="<?=site_url('Firewall/connection')?>"><img src="<?=base_url('assets/stc_logo.jpg')?>" style="width: 75px;"/></a>
+            <span class="header-title"><?=$this->config->item('app_name')?></span>
+        </div>
+        <div class="col-lg-4 col-md-4 text-right">
+            <span style="margin-right: 15px; font-size: 12px;">Logged As <?=$this->session->userdata('firewall_ip')?></span>
+            <button type="button" id="btn-logout" class="btn btn-info btn-sm">
+                <span class="glyphicon glyphicon-off" aria-hidden="true"></span> Disconnect
+            </button>
+        </div>
+    </div>
 </div>
 <div class="menu-area">
     <div class="row">
         <div class="col-md-6">
-            <a href="<?=site_url('Firewall/parser_excel')?>">
+            <a href="<?=site_url('Firewall/setup_rule')?>">
                 <div class="menu-item">
                     <div class="menu-icon"><span class="glyphicon glyphicon-check" aria-hidden="true" style="font-size: 4.5em"></span></div>
                     <div class="menu-title">Setup Rule</div>
@@ -89,7 +105,7 @@
             </a>
         </div>
         <div class="col-md-6">
-            <a href="<?=site_url('Firewall/parser_excel')?>">
+            <a href="<?=site_url('Firewall/cleanup_rule')?>">
                 <div class="menu-item">
                     <div class="menu-icon"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="font-size: 4.5em"></span></div>
                     <div class="menu-title">Cleanup Rule</div>

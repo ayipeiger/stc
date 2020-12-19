@@ -49,7 +49,7 @@ class Firewall extends CI_Controller {
    //                  $this->session->set_userdata("firewall_vdom", $this->input->post('vdom'));
 			// 		$this->session->set_userdata("firewall_user", $this->input->post('username'));
 			// 		$this->session->set_userdata("firewall_pass", $this->input->post('password'));
-			// 		redirect('Firewall/parser_excel');
+			// 		redirect('Firewall/cleanup_rule');
 			// 	} else {
 			// 		$data['error_message'] = "Authentication failed for ".$this->input->post('username')." using password";
 			// 	}
@@ -58,7 +58,7 @@ class Firewall extends CI_Controller {
 			// }
 		} else {
             if($this->session->userdata("is_connected")) {
-                redirect('Firewall/parser_excel');
+                redirect('Firewall/cleanup_rule');
             }
         }
 		$this->load->view('firewall/connection_page', $data);
@@ -97,11 +97,19 @@ class Firewall extends CI_Controller {
 		redirect('Firewall/connection');
 	}
 
-	public function parser_excel()
+    public function setup_rule()
+    {
+        if($this->session->userdata('is_connected')) {
+            $data = array();
+            $this->load->view('firewall/setup_rule_page', $data);
+        }  
+    }
+
+	public function cleanup_rule()
 	{
 		if($this->session->userdata('is_connected')) {
 			$data = array();
-			$this->load->view('firewall/parser_excel_page', $data);
+			$this->load->view('firewall/cleanup_rule_page', $data);
 		} else {
 			
 		}		
@@ -509,7 +517,7 @@ class Firewall extends CI_Controller {
 
     public function registered()
     {
-        $data['arrFirewall'] = $this->firewall_model->findall_entry();
+        $data['arrFirewall'] = $this->firewall_model->find_all_entry();
         $this->load->view('firewall/registered_page', $data);
     }
 
@@ -615,22 +623,66 @@ class Firewall extends CI_Controller {
     public function list_firewall()
     {
         $query = $this->input->get('q');
-        $data = array();
-        $fileuser = APPPATH.'../uploads/user.txt';
-        if(file_exists($fileuser)) {
-            $fp = fopen($fileuser, 'r');
-            $counter = 0;
-            while($line = fgets($fp)) {
-                if(strpos($line, $query) !== false) {
-                    list($ip, $port, $is_vdom, $vdom_name) = explode(';', $line);
-                    $data[$counter] = $ip." | ".$port." | ".$vdom_name;
-                    $counter++;
-                }
-            }
-            fclose($fp);
+        $arrFirewall = $this->firewall_model->find_all_entry($query);
+        $data['arrFirewall'] = array();
+        foreach($arrFirewall as $row) {
+            $data['arrFirewall'][] = $row->getIp()."|".$row->getPort()."|".$row->getNameVdom();
         }
+        return $this->output->set_content_type('application/json')->set_status_header(200)->set_output(json_encode($data['arrFirewall']));
+    }
 
-        return $this->output->set_content_type('application/json')->set_status_header(200)->set_output(json_encode($data));
+    public function generate_command_template() 
+    {
+        $postRequestNumber = $this->input->post('request_number');
+        $postIpSource = $this->input->post('ip_source');
+        $postIpDestination = $this->input->post('ip_destination');
+        $postTcpPort = $this->input->post('tcp_port');
+        $postUdpPort = $this->input->post('udp_port');
+
+        $firewallObj = $this->firewall_model->find_single_entry($this->session->userdata("firewall_ip"));
+        
+        $arrIpSource = array_map("trim", explode(",", $postIpSource));
+        $arrParsedIpSource = array();
+        foreach($arrIpSource as $row) {
+            $ipSrcFirewallObj = $this->firewalladdress_model->find_by_address($this->session->userdata("firewall_ip"), $row);
+            $arrParsedIpSource[] = $ipSrcFirewallObj->getIpname();
+        }
+        $parsedIpSource = implode(",", $arrParsedIpSource);
+        
+        $arrIpDestination = array_map("trim", explode(",", $postIpDestination));
+        $arrParsedIpDestination = array();
+        foreach($arrIpDestination as $row) {
+            $ipDestFirewallObj = $this->firewalladdress_model->find_by_address($this->session->userdata("firewall_ip"), $row);
+            $arrParsedIpDestination[] = $ipDestFirewallObj->getIpname();
+        }
+        $parsedIpDestination = implode(",", $arrParsedIpDestination);
+
+        $arrTcpPort = array_map("trim", explode(",", $postTcpPort));
+        $arrParsedTcpPort = array();
+        foreach($arrTcpPort as $row) {
+            $tcpPortFirewallObj = $this->firewallservice_model->find_by_portaddress($this->session->userdata("firewall_ip"), "TCP", $row);
+            $arrParsedTcpPort[] = $tcpPortFirewallObj->getPortname();
+        }
+        $parsedTcpPort = implode(",", $arrParsedTcpPort);
+
+        $arrUdpPort = array_map("trim", explode(",", $postUdpPort));
+        $arrParsedUdpPort = array();
+        foreach ($arrUdpPort as $row) {
+            $udpPortFirewallObj = $this->firewallservice_model->find_by_portaddress($this->session->userdata("firewall_ip"), "UDP", $row);
+            $arrParsedUdpPort[] = $udpPortFirewallObj->getPortname();
+        }
+        $parsedUdpPort = implode(",", $arrParsedUdpPort);
+        if(!empty($ipSrcFirewallObj) && !empty($ipDestFirewallObj) && !empty($tcpPortFirewallObj) && !empty($udpPortFirewallObj)) {
+            $setupCommandTemplate = $firewallObj->getSetupCommandTemplate();
+            $setupCommandTemplate = str_replace("{#IPSRC}", $parsedIpSource, $setupCommandTemplate);
+            $setupCommandTemplate = str_replace("{#IPDEST}", $parsedIpDestination, $setupCommandTemplate);
+            $setupCommandTemplate = str_replace("{#PORTTCP}", $parsedTcpPort, $setupCommandTemplate);
+            $setupCommandTemplate = str_replace("{#PORTUDP}", $parsedUdpPort, $setupCommandTemplate);
+            $firewallObj->setSetupCommandTemplate($setupCommandTemplate);
+        }
+        
+        $data['firewall'] = $firewallObj;
+        $this->load->view('firewall/generate_command_template', $data);
     }
 
     public function insert_log($policy_id, $src, $dest, $service, $action, $hit, $hist_action, $time_execute, $user)

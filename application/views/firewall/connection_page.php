@@ -202,7 +202,7 @@
                 <?=$error_message?>
             </div>
             <?php endif; ?>
-            <button type="submit" name="submit" class="btn btn-primary btn-block btn-lg" value="login">Connect</button>              
+            <button type="submit" name="submit" class="btn btn-primary btn-block btn-lg" value="login">Connect</button>
         </form>			
         <div class="text-center small">Any firewall not registered yet? <a href="<?=site_url('Firewall/register')?>">Register Now</a></div>
     </div>

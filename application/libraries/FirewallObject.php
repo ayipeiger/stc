@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class FirewallObject {
+class FirewallObject implements JsonSerializable {
 
 	private $ip;
 	private $port;
@@ -147,6 +147,17 @@ class FirewallObject {
         $this->spesialCommandTemplate = $spesialCommandTemplate;
 
         return $this;
+    }
+
+    public function jsonSerialize() {
+        return [
+            'ip' => $this->getIp(),
+            'port' => $this->getPort(),
+            'isVdom' => $this->getIsVdom(),
+            'nameVdom' => $this->getNameVdom(),
+            'setupCommandTemplate' => $this->getSetupCommandTemplate(),
+            'spesialCommandTemplate' => $this->getSpesialCommandTemplate()
+        ];
     }
 
     public function __destructors()
