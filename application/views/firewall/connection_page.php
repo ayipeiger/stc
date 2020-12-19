@@ -45,7 +45,7 @@
         margin-left: 20px;
     }
 	.login-form {
-        width: 350px;
+        width: 500px;
 		margin: 0 auto;
 		padding: 30px 0;
 	}

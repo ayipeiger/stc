@@ -48,7 +48,7 @@
     }
 
     .register-form {
-        width: 350px;
+        width: 500px;
         margin: 0 auto;
         padding: 30px 0;
     }
@@ -152,6 +152,30 @@
             area.val( area.val().substring(0, curPos) + '{#PORTUDP}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+10, 'selectionEnd': curPos+10});
         });
 
+        $('#btn-ipnmsrc').click(function(){
+            var area   = $('#txtarea-spesial-template');
+            var curPos = area.prop('selectionEnd');
+            area.val( area.val().substring(0, curPos) + '{#IPNMSRC}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+10, 'selectionEnd': curPos+10});
+        });
+
+        $('#btn-ipnmdest').click(function(){
+            var area   = $('#txtarea-spesial-template');
+            var curPos = area.prop('selectionEnd');
+            area.val( area.val().substring(0, curPos) + '{#IPNMDEST}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+11, 'selectionEnd': curPos+11});
+        });
+
+        $('#btn-portnmtcp').click(function(){
+            var area   = $('#txtarea-spesial-template');    
+            var curPos = area.prop('selectionEnd');
+            area.val( area.val().substring(0, curPos) + '{#PORTNMTCP}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+12, 'selectionEnd': curPos+12});
+        });
+
+        $('#btn-portnmudp').click(function(){
+            var area   = lastTextAreaFocused;
+            var curPos = area.prop('selectionEnd');
+            area.val( area.val().substring(0, curPos) + '{#PORTNMUDP}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+12, 'selectionEnd': curPos+12});
+        });
+
 	});
 </script>
 </head>
@@ -194,9 +218,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <button type="button" id="btn-ipsrc" class="btn btn-primary btn-xs" style="margin-right: 5px;">{#IPSRC}</button>
-                        <button type="button" id="btn-ipdest" class="btn btn-primary btn-xs">{#IPDEST}</button>
-                    </div>
-                    <div class="col-xs-12" style="margin-top: 5px;">
+                        <button type="button" id="btn-ipdest" class="btn btn-primary btn-xs" style="margin-right: 5px;">{#IPDEST}</button>
                         <button type="button" id="btn-porttcp" class="btn btn-primary btn-xs" style="margin-right: 5px;">{#PORTTCP}</button>
                         <button type="button" id="btn-portudp" class="btn btn-primary btn-xs">{#PORTUDP}</button>
                     </div>
@@ -206,6 +228,16 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <textarea class="form-control" id="txtarea-setup-template" name="setup_command_template" rows="4" placeholder="Your Setup Rule Template Command Here.."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <button type="button" id="btn-ipnmsrc" class="btn btn-warning btn-xs" style="margin-right: 5px;">{#IPNMSRC}</button>
+                        <button type="button" id="btn-ipnmdest" class="btn btn-warning btn-xs" style="margin-right: 5px;">{#IPNMDEST}</button>
+                        <button type="button" id="btn-portnmtcp" class="btn btn-warning btn-xs" style="margin-right: 5px;">{#PORTNMTCP}</button>
+                        <button type="button" id="btn-portnmudp" class="btn btn-warning btn-xs">{#PORTNMUDP}</button>
                     </div>
                 </div>
             </div>

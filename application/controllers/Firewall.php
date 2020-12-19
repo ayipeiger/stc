@@ -158,7 +158,7 @@ class Firewall extends CI_Controller {
             }
 
             $response['status'] = true;
-            $response['status_desc'] = "Success insert ".count($arrFirewalAddressObj)." data.";
+            $response['status_desc'] = "Success truncate all address data then insert ".count($arrFirewalAddressObj)." data.";
         } catch (Exception $e) {
             $response['status'] = false;
             $response['status_desc'] = $e->getMessage();
@@ -210,7 +210,7 @@ class Firewall extends CI_Controller {
             }
 
             $response['status'] = true;
-            $response['status_desc'] = "Success insert ".count($arrFirewalServicesObj)." data.";
+            $response['status_desc'] = "Success truncate all service data then insert ".count($arrFirewalServicesObj)." data.";
         } catch (Exception $e) {
             $response['status'] = false;
             $response['status_desc'] = $e->getMessage();
@@ -633,19 +633,28 @@ class Firewall extends CI_Controller {
 
     public function generate_command_template() 
     {
-        $postRequestNumber = $this->input->post('request_number');
-        $postIpSource = $this->input->post('ip_source');
-        $postIpDestination = $this->input->post('ip_destination');
-        $postTcpPort = $this->input->post('tcp_port');
-        $postUdpPort = $this->input->post('udp_port');
+        $postRequestNumber = str_replace(" ", "", $this->input->post('request_number'));
+        $postIpSource = str_replace(" ", "", $this->input->post('ip_source'));
+        $postIpDestination = str_replace(" ", "", $this->input->post('ip_destination'));
+        $postTcpPort = str_replace(" ", "", $this->input->post('tcp_port'));
+        $postUdpPort = str_replace(" ", "", $this->input->post('udp_port'));
 
         $firewallObj = $this->firewall_model->find_single_entry($this->session->userdata("firewall_ip"));
-        
+        $mappingNotFound = false;
+        $mappingNotFoundDesc = "";
+
         $arrIpSource = array_map("trim", explode(",", $postIpSource));
         $arrParsedIpSource = array();
         foreach($arrIpSource as $row) {
             $ipSrcFirewallObj = $this->firewalladdress_model->find_by_address($this->session->userdata("firewall_ip"), $row);
-            $arrParsedIpSource[] = $ipSrcFirewallObj->getIpname();
+            if($ipSrcFirewallObj instanceof FirewallAddressObject) {
+                $arrParsedIpSource[] = $ipSrcFirewallObj->getIpname();
+            } else {
+                $mappingNotFound = true;
+                $mappingNotFoundDesc .= "We found that IP ".$row." doesn't exist\n\r".PHP_EOL;
+                $selectedParsedIpSource = str_replace("/", "_", $row);
+                $arrParsedIpSource[] = $selectedParsedIpSource;
+            }
         }
         $parsedIpSource = implode(",", $arrParsedIpSource);
         
@@ -653,7 +662,15 @@ class Firewall extends CI_Controller {
         $arrParsedIpDestination = array();
         foreach($arrIpDestination as $row) {
             $ipDestFirewallObj = $this->firewalladdress_model->find_by_address($this->session->userdata("firewall_ip"), $row);
-            $arrParsedIpDestination[] = $ipDestFirewallObj->getIpname();
+            if($ipDestFirewallObj instanceof FirewallAddressObject) {
+                $arrParsedIpDestination[] = $ipDestFirewallObj->getIpname();
+            } else {
+                $mappingNotFound = true;
+                $mappingNotFoundDesc .= "We found that IP ".$row." doesn't exist\n\r".PHP_EOL;
+                $selectedParsedIpDestination = str_replace("/", "_", $row);
+                $arrParsedIpDestination[] = $selectedParsedIpDestination;
+            }
+            
         }
         $parsedIpDestination = implode(",", $arrParsedIpDestination);
 
@@ -661,7 +678,14 @@ class Firewall extends CI_Controller {
         $arrParsedTcpPort = array();
         foreach($arrTcpPort as $row) {
             $tcpPortFirewallObj = $this->firewallservice_model->find_by_portaddress($this->session->userdata("firewall_ip"), "TCP", $row);
-            $arrParsedTcpPort[] = $tcpPortFirewallObj->getPortname();
+            if($tcpPortFirewallObj instanceof FirewallServiceObject) {
+                $arrParsedTcpPort[] = $tcpPortFirewallObj->getPortname();
+            } else {
+                $mappingNotFound = true;
+                $mappingNotFoundDesc .= "We found that TCP Port ".$row." doesn't exist\n\r".PHP_EOL;
+                $selectedParsedTcpPort= $row."-tcp";
+                $arrParsedTcpPort[] = $selectedParsedTcpPort;
+            }
         }
         $parsedTcpPort = implode(",", $arrParsedTcpPort);
 
@@ -669,18 +693,44 @@ class Firewall extends CI_Controller {
         $arrParsedUdpPort = array();
         foreach ($arrUdpPort as $row) {
             $udpPortFirewallObj = $this->firewallservice_model->find_by_portaddress($this->session->userdata("firewall_ip"), "UDP", $row);
-            $arrParsedUdpPort[] = $udpPortFirewallObj->getPortname();
+            if($udpPortFirewallObj instanceof FirewallServiceObject) {
+                $arrParsedUdpPort[] = $udpPortFirewallObj->getPortname();
+            } else {
+                $mappingNotFound = true;
+                $mappingNotFoundDesc .= "We found that UDP Port ".$row." doesn't exist\n\r".PHP_EOL;
+                $selectedParsedUdpPort= $row."-udp";
+                $arrParsedUdpPort[] = $selectedParsedUdpPort;
+            }
+            
         }
         $parsedUdpPort = implode(",", $arrParsedUdpPort);
-        if(!empty($ipSrcFirewallObj) && !empty($ipDestFirewallObj) && !empty($tcpPortFirewallObj) && !empty($udpPortFirewallObj)) {
+
+        // var_dump(empty($ipSrcFirewallObj));
+        // var_dump(empty($ipDestFirewallObj));
+        // var_dump(empty($tcpPortFirewallObj));
+        // var_dump(empty($udpPortFirewallObj));
+        if(!$mappingNotFound) {
             $setupCommandTemplate = $firewallObj->getSetupCommandTemplate();
             $setupCommandTemplate = str_replace("{#IPSRC}", $parsedIpSource, $setupCommandTemplate);
             $setupCommandTemplate = str_replace("{#IPDEST}", $parsedIpDestination, $setupCommandTemplate);
             $setupCommandTemplate = str_replace("{#PORTTCP}", $parsedTcpPort, $setupCommandTemplate);
             $setupCommandTemplate = str_replace("{#PORTUDP}", $parsedUdpPort, $setupCommandTemplate);
             $firewallObj->setSetupCommandTemplate($setupCommandTemplate);
+        } else {
+            $spesialCommandTemplate = $firewallObj->getSpesialCommandTemplate();
+            $spesialCommandTemplate = str_replace("{#IPSRC}", $postIpSource, $spesialCommandTemplate);
+            $spesialCommandTemplate = str_replace("{#IPDEST}", $postIpDestination, $spesialCommandTemplate);
+            $spesialCommandTemplate = str_replace("{#PORTTCP}", $postTcpPort, $spesialCommandTemplate);
+            $spesialCommandTemplate = str_replace("{#PORTUDP}", $postUdpPort, $spesialCommandTemplate);
+            $spesialCommandTemplate = str_replace("{#IPNMSRC}", $parsedIpSource, $spesialCommandTemplate);
+            $spesialCommandTemplate = str_replace("{#IPNMDEST}", $parsedIpDestination, $spesialCommandTemplate);
+            $spesialCommandTemplate = str_replace("{#PORTNMTCP}", $parsedTcpPort, $spesialCommandTemplate);
+            $spesialCommandTemplate = str_replace("{#PORTNMUDP}", $parsedUdpPort, $spesialCommandTemplate);
+            $firewallObj->setSpesialCommandTemplate($spesialCommandTemplate);
         }
         
+        $data['mappingNotFound'] = $mappingNotFound;
+        $data['mappingNotFoundDesc'] = $mappingNotFoundDesc;
         $data['firewall'] = $firewallObj;
         $this->load->view('firewall/generate_command_template', $data);
     }

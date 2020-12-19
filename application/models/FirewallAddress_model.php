@@ -24,7 +24,7 @@ class FirewallAddress_model extends CI_Model {
 		$this->db->where('address', $address);
 		$resultSet = $this->db->get('firewall_object_addresses');
 		
-		$data = new FirewallAddressObject();
+		$data = new StdClass();
 		if($resultSet->num_rows() > 0) {
 			$row = $resultSet->row();
 			$data = new FirewallAddressObject($row->ip, $row->ipname, $row->location, $row->type, $row->address);
