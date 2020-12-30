@@ -643,6 +643,8 @@ class Firewall extends CI_Controller {
         $mappingNotFound = false;
         $mappingNotFoundDesc = "";
 
+        $parsedReqNumber = trim($postRequestNumber);
+
         $arrIpSource = array_map("trim", explode(",", $postIpSource));
         $arrParsedIpSource = array();
         foreach($arrIpSource as $row) {
@@ -704,13 +706,10 @@ class Firewall extends CI_Controller {
             
         }
         $parsedUdpPort = implode(",", $arrParsedUdpPort);
-
-        // var_dump(empty($ipSrcFirewallObj));
-        // var_dump(empty($ipDestFirewallObj));
-        // var_dump(empty($tcpPortFirewallObj));
-        // var_dump(empty($udpPortFirewallObj));
+        
         if(!$mappingNotFound) {
             $setupCommandTemplate = $firewallObj->getSetupCommandTemplate();
+            $setupCommandTemplate = str_replace("{#REQNUM}", $parsedReqNumber, $setupCommandTemplate);
             $setupCommandTemplate = str_replace("{#IPSRC}", $parsedIpSource, $setupCommandTemplate);
             $setupCommandTemplate = str_replace("{#IPDEST}", $parsedIpDestination, $setupCommandTemplate);
             $setupCommandTemplate = str_replace("{#PORTTCP}", $parsedTcpPort, $setupCommandTemplate);

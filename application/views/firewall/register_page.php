@@ -128,6 +128,12 @@
             lastTextAreaFocused = $(this);
         });
 
+        $('#btn-reqnum').click(function(){
+            var area   = $('#txtarea-setup-template');
+            var curPos = area.prop('selectionEnd');
+            area.val( area.val().substring(0, curPos) + '{#REQNUM}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+9, 'selectionEnd': curPos+9});
+        });
+
         $('#btn-ipsrc').click(function(){
             var area   = lastTextAreaFocused;
             var curPos = area.prop('selectionEnd');
@@ -152,7 +158,7 @@
             area.val( area.val().substring(0, curPos) + '{#PORTUDP}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+10, 'selectionEnd': curPos+10});
         });
 
-        $('#btn-ipnmsrc').click(function(){
+        $('#btn-ipnew').click(function(){
             var area   = $('#txtarea-spesial-template');
             var curPos = area.prop('selectionEnd');
             area.val( area.val().substring(0, curPos) + '{#IPNMSRC}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+10, 'selectionEnd': curPos+10});
@@ -217,6 +223,7 @@
             <div class="form-group">
                 <div class="row">
                     <div class="col-xs-12">
+                        <button type="button" id="btn-reqnum" class="btn btn-primary btn-xs" style="margin-right: 5px;">{#REQNUM}</button>
                         <button type="button" id="btn-ipsrc" class="btn btn-primary btn-xs" style="margin-right: 5px;">{#IPSRC}</button>
                         <button type="button" id="btn-ipdest" class="btn btn-primary btn-xs" style="margin-right: 5px;">{#IPDEST}</button>
                         <button type="button" id="btn-porttcp" class="btn btn-primary btn-xs" style="margin-right: 5px;">{#PORTTCP}</button>
@@ -234,19 +241,30 @@
             <div class="form-group">
                 <div class="row">
                     <div class="col-xs-12">
-                        <button type="button" id="btn-ipnmsrc" class="btn btn-warning btn-xs" style="margin-right: 5px;">{#IPNMSRC}</button>
-                        <button type="button" id="btn-ipnmdest" class="btn btn-warning btn-xs" style="margin-right: 5px;">{#IPNMDEST}</button>
-                        <button type="button" id="btn-portnmtcp" class="btn btn-warning btn-xs" style="margin-right: 5px;">{#PORTNMTCP}</button>
-                        <button type="button" id="btn-portnmudp" class="btn btn-warning btn-xs">{#PORTNMUDP}</button>
+                        <button type="button" id="btn-ipnew" class="btn btn-warning btn-xs" style="margin-right: 5px;">{#IPNEW}</button>
+                        <button type="button" id="btn-ipname" class="btn btn-warning btn-xs" style="margin-right: 5px;">{#IPNAME}</button>
+                        <button type="button" id="btn-ipstart" class="btn btn-warning btn-xs" style="margin-right: 5px;">{#IPSTART}</button>
+                        <button type="button" id="btn-ipend" class="btn btn-warning btn-xs" style="margin-right: 5px;">{#IPEND}</button>
+                        <button type="button" id="btn-portnew" class="btn btn-warning btn-xs" style="margin-right: 5px;">{#PORTNEW}</button>
+                        <button type="button" id="btn-portname" class="btn btn-warning btn-xs">{#PORTNAME}</button>
                     </div>
                 </div>
             </div>
             <div class="form-group">
                 <div class="row">
                     <div class="col-xs-12">
-                        <textarea class="form-control" id="txtarea-spesial-template" name="spesial_command_template" rows="4" placeholder="Your Spesial Command Template Here.."></textarea>
+                        <textarea class="form-control" id="txtarea-spesial-address-1-template" name="spesial_command_address1_template" rows="2" placeholder="Your Spesial Command Template For IP Single Digit Here.."></textarea>
+                        <textarea class="form-control" id="txtarea-spesial-address-2-template" name="spesial_command_address2_template" rows="2" placeholder="Your Spesial Command Template For IP with Subnet Here.."></textarea>
+                        <textarea class="form-control" id="txtarea-spesial-address-3-template" name="spesial_command_address3_template" rows="2" placeholder="Your Spesial Command Template For IP with Range Here.."></textarea>
                     </div>
-                </div>      
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <textarea class="form-control" id="txtarea-spesial-port-template" name="spesial_command_port_template" rows="2" placeholder="Your Spesial Command Template For Port Here.."></textarea>
+                    </div>
+                </div>
             </div>
             <?php if(isset($error_message)): ?>
             <div class="alert alert-danger" role="alert">
