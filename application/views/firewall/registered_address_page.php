@@ -265,7 +265,6 @@
 				<thead>
 					<tr>
 						<th>Ip Name</th>
-						<th>Location</th>
 						<th>Type</th>
 						<th>Address</th>
 					</tr>
@@ -276,7 +275,6 @@
 							<?php foreach($arrFirewallAddress as $firewallAddressObj): ?>
 								<tr>
 									<td align="right"><?=$firewallAddressObj->getIpname()?></td>
-									<td align="right"><?=$firewallAddressObj->getLocation()?></td>
 									<td align="center"><?=$firewallAddressObj->getType()?></td>
 									<td align="center"><?=$firewallAddressObj->getAddress()?></td>
 								</tr>
@@ -291,9 +289,8 @@
 				<thead>
 					<tr>
 						<th>Ip Name</th>
-                        <th>Location</th>
-                        <th>Type</th>
-                        <th>Address</th>
+            <th>Type</th>
+            <th>Address</th>
 					</tr>
 				</thead>
 			</table>

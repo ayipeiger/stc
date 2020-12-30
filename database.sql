@@ -67,7 +67,6 @@ DROP TABLE IF EXISTS `firewall_object_addresses`;
 CREATE TABLE IF NOT EXISTS `firewall_object_addresses` (
   `ip` varchar(50) COLLATE latin1_general_ci NOT NULL,
   `ipname` varchar(50) COLLATE latin1_general_ci NOT NULL,
-  `location` varchar(50) COLLATE latin1_general_ci NOT NULL,
   `type` varchar(50) COLLATE latin1_general_ci NOT NULL,
   `address` varchar(50) COLLATE latin1_general_ci NOT NULL,
   KEY `select_idx` (`ip`,`address`) USING BTREE

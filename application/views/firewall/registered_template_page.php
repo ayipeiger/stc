@@ -259,14 +259,30 @@
         </div>
 	</div>
 	<div class="content">
+        <h4><?=$firewall->getIp();?></h4>
 		<div class="main-content">
             <div style="margin-bottom: 20px;">
-                <h5>Setup Command Template of <?=$firewall->getIp();?></h5>
+                <h5>Setup Command Template</h5>
                 <pre><?=nl2br($firewall->getSetupCommandTemplate());?></pre>
             </div>
+            <?php 
+                list($spesialAddress1, $spesialAddress2, $spesialAddress3) = explode("~~", $firewall->getSpesialCommandAddressTemplate());
+            ?>
             <div style="margin-bottom: 20px;">
-                <h5>Spesial Command Template of <?=$firewall->getIp();?></h5>
-                <pre><?=nl2br($firewall->getSpesialCommandTemplate());?></pre>
+                <h5>Spesial Command Template of Single IP</h5>
+                <pre><?=nl2br($spesialAddress1);?></pre>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <h5>Spesial Command Template of Netmas IP</h5>
+                <pre><?=nl2br($spesialAddress2);?></pre>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <h5>Spesial Command Template of Range IP</h5>
+                <pre><?=nl2br($spesialAddress3);?></pre>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <h5>Spesial Command Template of Port</h5>
+                <pre><?=nl2br($firewall->getSpesialCommandPortTemplate());?></pre>
             </div>
         </div>
     </div>

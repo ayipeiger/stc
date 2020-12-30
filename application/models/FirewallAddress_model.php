@@ -4,14 +4,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class FirewallAddress_model extends CI_Model {
 
 	public function find_all_registered($ip) {
-		$this->db->select('ip, ipname, location, type, address');
+		$this->db->select('ip, ipname, type, address');
 		$this->db->where('ip', $ip);
 		$resultSet = $this->db->get('firewall_object_addresses');
 
 		$data = array();
 		if($resultSet->num_rows() > 0) {
 			foreach($resultSet->result() as $row) {
-				$data[] = new FirewallAddressObject($row->ip, $row->ipname, $row->location, $row->type, $row->address);
+				$data[] = new FirewallAddressObject($row->ip, $row->ipname, $row->type, $row->address);
 			}
 		}
 		
@@ -19,7 +19,7 @@ class FirewallAddress_model extends CI_Model {
 	}
 
 	public function find_by_address($ip, $address) {
-		$this->db->select('ip, ipname, location, type, address');
+		$this->db->select('ip, ipname, type, address');
 		$this->db->where('ip', $ip);
 		$this->db->where('address', $address);
 		$resultSet = $this->db->get('firewall_object_addresses');
@@ -27,7 +27,7 @@ class FirewallAddress_model extends CI_Model {
 		$data = new StdClass();
 		if($resultSet->num_rows() > 0) {
 			$row = $resultSet->row();
-			$data = new FirewallAddressObject($row->ip, $row->ipname, $row->location, $row->type, $row->address);
+			$data = new FirewallAddressObject($row->ip, $row->ipname, $row->type, $row->address);
 		}
 		
 		return $data;
@@ -42,7 +42,6 @@ class FirewallAddress_model extends CI_Model {
 		$data = array(
 				'ip' => $firewallAddressObj->getIp(),
 				'ipname' => $firewallAddressObj->getIpname(),
-				'location' => $firewallAddressObj->getLocation(),
 				'type' => $firewallAddressObj->getType(),
 				'address' => $firewallAddressObj->getAddress()
 			);
@@ -65,7 +64,6 @@ class FirewallAddress_model extends CI_Model {
 			$data[] = array(
 					'ip' => $firewallAddressObj->getIp(),
 					'ipname' => $firewallAddressObj->getIpname(),
-					'location' => $firewallAddressObj->getLocation(),
 					'type' => $firewallAddressObj->getType(),
 					'address' => $firewallAddressObj->getAddress()
 				);

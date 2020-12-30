@@ -149,8 +149,14 @@ class Firewall extends CI_Controller {
             $arrFirewalAddressObj = array();
             for($counter_row = 2; $counter_row <= $highestRow; $counter_row++) {
                 $address = $objActiveWorksheet->getCell("D".$counter_row)->getValue();
-                
-                $firewallAddressObj = new FirewallAddressObject($this->input->post('ip_address_object'), $objActiveWorksheet->getCell("A".$counter_row)->getValue(), $objActiveWorksheet->getCell("B".$counter_row)->getValue(), $objActiveWorksheet->getCell("C".$counter_row)->getValue(), $objActiveWorksheet->getCell("D".$counter_row)->getValue());
+                if($address <> null || $address <> '') {
+                    preg_match_all('/(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})/', $address, $matches);
+                    if(isset($matches[0]) && count($matches[0]) == 2) {
+                        $address = $matches[1][0].".".$matches[2][0]."-".$matches[2][1];
+                    } 
+                }
+
+                $firewallAddressObj = new FirewallAddressObject($this->input->post('ip_address_object'), $objActiveWorksheet->getCell("A".$counter_row)->getValue(), $objActiveWorksheet->getCell("B".$counter_row)->getValue(), $objActiveWorksheet->getCell("C".$counter_row)->getValue(), $address);
                 $arrFirewalAddressObj[] = $firewallAddressObj;
             }
             $affectedRow = $this->firewalladdress_model->insert_batch_entry($arrFirewalAddressObj);

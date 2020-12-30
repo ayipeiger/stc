@@ -128,6 +128,8 @@
             lastTextAreaFocused = $(this);
         });
 
+        $("textarea.")
+
         $('#btn-reqnum').click(function(){
             var area   = $('#txtarea-setup-template');
             var curPos = area.prop('selectionEnd');
@@ -161,25 +163,37 @@
         $('#btn-ipnew').click(function(){
             var area   = $('#txtarea-spesial-template');
             var curPos = area.prop('selectionEnd');
-            area.val( area.val().substring(0, curPos) + '{#IPNMSRC}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+10, 'selectionEnd': curPos+10});
+            area.val( area.val().substring(0, curPos) + '{#IPNEW}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+8, 'selectionEnd': curPos+8});
         });
 
-        $('#btn-ipnmdest').click(function(){
+        $('#btn-ipname').click(function(){
             var area   = $('#txtarea-spesial-template');
             var curPos = area.prop('selectionEnd');
-            area.val( area.val().substring(0, curPos) + '{#IPNMDEST}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+11, 'selectionEnd': curPos+11});
+            area.val( area.val().substring(0, curPos) + '{#IPNAME}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+9, 'selectionEnd': curPos+9});
         });
 
-        $('#btn-portnmtcp').click(function(){
-            var area   = $('#txtarea-spesial-template');    
+        $('#btn-ipstart').click(function(){
+            var area   = $('#txtarea-spesial-address-3-template');
             var curPos = area.prop('selectionEnd');
-            area.val( area.val().substring(0, curPos) + '{#PORTNMTCP}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+12, 'selectionEnd': curPos+12});
+            area.val( area.val().substring(0, curPos) + '{#IPSTART}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+10, 'selectionEnd': curPos+10});
         });
 
-        $('#btn-portnmudp').click(function(){
-            var area   = lastTextAreaFocused;
+        $('#btn-ipend').click(function(){
+            var area   = $('#txtarea-spesial-address-3-template');
             var curPos = area.prop('selectionEnd');
-            area.val( area.val().substring(0, curPos) + '{#PORTNMUDP}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+12, 'selectionEnd': curPos+12});
+            area.val( area.val().substring(0, curPos) + '{#IPEND}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+8, 'selectionEnd': curPos+8});
+        });
+
+        $('#btn-portnew').click(function(){
+            var area   = $('#txtarea-spesial-port-template');
+            var curPos = area.prop('selectionEnd');
+            area.val( area.val().substring(0, curPos) + '{#PORTNEW}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+10, 'selectionEnd': curPos+10});
+        });
+
+        $('#btn-portname').click(function(){
+            var area   = $('#txtarea-spesial-port-template');
+            var curPos = area.prop('selectionEnd');
+            area.val( area.val().substring(0, curPos) + '{#PORTNAME}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+11, 'selectionEnd': curPos+11});
         });
 
 	});
@@ -253,9 +267,9 @@
             <div class="form-group">
                 <div class="row">
                     <div class="col-xs-12">
-                        <textarea class="form-control" id="txtarea-spesial-address-1-template" name="spesial_command_address1_template" rows="2" placeholder="Your Spesial Command Template For IP Single Digit Here.."></textarea>
-                        <textarea class="form-control" id="txtarea-spesial-address-2-template" name="spesial_command_address2_template" rows="2" placeholder="Your Spesial Command Template For IP with Subnet Here.."></textarea>
-                        <textarea class="form-control" id="txtarea-spesial-address-3-template" name="spesial_command_address3_template" rows="2" placeholder="Your Spesial Command Template For IP with Range Here.."></textarea>
+                        <textarea class="form-control spesial-command" id="txtarea-spesial-address-1-template" name="spesial_command_address1_template" rows="2" placeholder="Your Spesial Command Template For IP Single Digit Here.."></textarea>
+                        <textarea class="form-control spesial-command" id="txtarea-spesial-address-2-template" name="spesial_command_address2_template" rows="2" placeholder="Your Spesial Command Template For IP with Subnet Here.."></textarea>
+                        <textarea class="form-control spesial-command" id="txtarea-spesial-address-3-template" name="spesial_command_address3_template" rows="2" placeholder="Your Spesial Command Template For IP with Range Here.."></textarea>
                     </div>
                 </div>
             </div>

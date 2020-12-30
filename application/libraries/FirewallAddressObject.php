@@ -5,7 +5,6 @@ class FirewallAddressObject {
 
 	private $ip;
 	private $ipname;
-	private $location;
 	private $type;
 	private $address;
 
@@ -18,11 +17,10 @@ class FirewallAddressObject {
 	 * @param    $type   
 	 * @param    $address   
 	 */
-	public function __construct($ip = null, $ipname = null, $location = null, $type = null, $address = null)
+	public function __construct($ip = null, $ipname = null, $type = null, $address = null)
 	{
 		$this->ip = $ip;
 		$this->ipname = $ipname;
-		$this->location = $location;
 		$this->type = $type;
 		$this->address = $address;
 	}
@@ -63,26 +61,6 @@ class FirewallAddressObject {
     public function setIpname($ipname)
     {
         $this->ipname = $ipname;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLocation()
-    {
-        return $this->location;
-    }
-
-    /**
-     * @param mixed $location
-     *
-     * @return self
-     */
-    public function setLocation($location)
-    {
-        $this->location = $location;
 
         return $this;
     }
