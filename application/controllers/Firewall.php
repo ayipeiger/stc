@@ -148,6 +148,8 @@ class Firewall extends CI_Controller {
 
             $arrFirewalAddressObj = array();
             for($counter_row = 2; $counter_row <= $highestRow; $counter_row++) {
+                $address = $objActiveWorksheet->getCell("D".$counter_row)->getValue();
+                
                 $firewallAddressObj = new FirewallAddressObject($this->input->post('ip_address_object'), $objActiveWorksheet->getCell("A".$counter_row)->getValue(), $objActiveWorksheet->getCell("B".$counter_row)->getValue(), $objActiveWorksheet->getCell("C".$counter_row)->getValue(), $objActiveWorksheet->getCell("D".$counter_row)->getValue());
                 $arrFirewalAddressObj[] = $firewallAddressObj;
             }
@@ -509,7 +511,14 @@ class Firewall extends CI_Controller {
 	{
 		$data = array();
         if($this->input->post('submit') === 'register') {
-            $firewallObj = new FirewallObject($this->input->post('firewall'), $this->input->post('port'), $this->input->post('vdom')<>'' ? true : false, $this->input->post('vdom'), $this->input->post('setup_command_template'), $this->input->post('spesial_command_template'));
+            $spesialCommandAddress1Template = $this->input->post('spesial_command_address1_template'); //ip single digit
+            $spesialCommandAddress2Template = $this->input->post('spesial_command_address2_template'); //ip with spesific subnet
+            $spesialCommandAddress3Template = $this->input->post('spesial_command_address3_template'); //ip with spesific range
+            $spesialCommandAddressTemplate = $spesialCommandAddress1Template."~~".$spesialCommandAddress2Template."~~".$spesialCommandAddress3Template;
+            $spesialCommandPortTemplate = $this->input->post('spesial_command_port_template');
+
+
+            $firewallObj = new FirewallObject($this->input->post('firewall'), $this->input->post('port'), $this->input->post('vdom')<>'' ? true : false, $this->input->post('vdom'), $this->input->post('setup_command_template'), $spesialCommandAddressTemplate, $spesialCommandPortTemplate);
             $result = $this->firewall_model->insert_entry($firewallObj);
         }
 		$this->load->view('firewall/register_page', $data);

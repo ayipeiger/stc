@@ -37,7 +37,8 @@ CREATE TABLE IF NOT EXISTS `firewall` (
   `is_vdom` tinyint(1) NOT NULL,
   `vdom` varchar(50) COLLATE latin1_general_ci NOT NULL,
   `setup_command` tinytext COLLATE latin1_general_ci NOT NULL,
-  `spesial_command` tinytext COLLATE latin1_general_ci NOT NULL,
+  `spesial_address_command` tinytext COLLATE latin1_general_ci NOT NULL,
+  `spesial_port_command` tinytext COLLATE latin1_general_ci NOT NULL,
   PRIMARY KEY (`ip`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
@@ -50,11 +51,11 @@ TRUNCATE TABLE `firewall`;
 -- Dumping data for table `firewall`
 --
 
-INSERT INTO `firewall` (`ip`, `port`, `is_vdom`, `vdom`, `setup_command`, `spesial_command`) VALUES('10.35.65.151', 30, 1, 'WAN', 'configure\r\n\r\nset source ip {#IPSRC}\r\nset destination ip {#IPDEST}\r\nset service {#PORTTCP} {#PORTUDP}\r\n\r\nsave', 'edit {#IPSRC}\r\nconfigure subnet {#IPSRC}');
-INSERT INTO `firewall` (`ip`, `port`, `is_vdom`, `vdom`, `setup_command`, `spesial_command`) VALUES('172.18.44.157', 25, 1, 'WAN', 'Template {#IPSRC}\r\nTemplate {#IPDEST}\r\nTemplate {#PORTTCP}\r\nTemplate {#PORTUDP}', 'Template {#IPSRC}\r\nTemplate {#IPDEST}\r\nTemplate {#PORTTCP}\r\nTemplate {#PORTUDP}');
-INSERT INTO `firewall` (`ip`, `port`, `is_vdom`, `vdom`, `setup_command`, `spesial_command`) VALUES('172.18.44.160', 8080, 1, 'LAN', 'Template {#IPSRC}\r\nTemplate {#IPDEST}\r\nTemplate {#PORTTCP}\r\nTemplate {#PORTUDP}', 'Template {#IPSRC}\r\nTemplate {#IPDEST}\r\nTemplate {#PORTTCP}\r\nTemplate {#PORTUDP}');
-INSERT INTO `firewall` (`ip`, `port`, `is_vdom`, `vdom`, `setup_command`, `spesial_command`) VALUES('192.168.6.1', 25, 1, 'WAN', 'Template 1\r\nTemplate 2\r\nTemplate 3', 'Template 4\r\nTemplate 5\r\nTemplate 6');
-INSERT INTO `firewall` (`ip`, `port`, `is_vdom`, `vdom`, `setup_command`, `spesial_command`) VALUES('192.168.76.14', 30, 1, 'LAN', 'Testing A\r\nTesting B\r\nTesting C', 'Testing D\r\nTesting E\r\nTesting F');
+INSERT INTO `firewall` (`ip`, `port`, `is_vdom`, `vdom`, `setup_command`, `spesial_address_command`, `spesial_port_command`) VALUES('10.35.65.151', 30, 1, 'WAN', 'configure\r\n\r\nset source ip {#IPSRC}\r\nset destination ip {#IPDEST}\r\nset service {#PORTTCP} {#PORTUDP}\r\n\r\nsave', 'edit {#IPSRC}\r\nconfigure subnet {#IPSRC}', '');
+INSERT INTO `firewall` (`ip`, `port`, `is_vdom`, `vdom`, `setup_command`, `spesial_address_command`, `spesial_port_command`) VALUES('172.18.44.157', 25, 1, 'WAN', 'Template {#IPSRC}\r\nTemplate {#IPDEST}\r\nTemplate {#PORTTCP}\r\nTemplate {#PORTUDP}', 'Template {#IPSRC}\r\nTemplate {#IPDEST}\r\nTemplate {#PORTTCP}\r\nTemplate {#PORTUDP}', '');
+INSERT INTO `firewall` (`ip`, `port`, `is_vdom`, `vdom`, `setup_command`, `spesial_address_command`, `spesial_port_command`) VALUES('172.18.44.160', 8080, 1, 'LAN', 'Template {#IPSRC}\r\nTemplate {#IPDEST}\r\nTemplate {#PORTTCP}\r\nTemplate {#PORTUDP}', 'Template {#IPSRC}\r\nTemplate {#IPDEST}\r\nTemplate {#PORTTCP}\r\nTemplate {#PORTUDP}', '');
+INSERT INTO `firewall` (`ip`, `port`, `is_vdom`, `vdom`, `setup_command`, `spesial_address_command`, `spesial_port_command`) VALUES('192.168.6.1', 25, 1, 'WAN', 'Template 1\r\nTemplate 2\r\nTemplate 3', 'Template 4\r\nTemplate 5\r\nTemplate 6', '');
+INSERT INTO `firewall` (`ip`, `port`, `is_vdom`, `vdom`, `setup_command`, `spesial_address_command`, `spesial_port_command`) VALUES('192.168.76.14', 30, 1, 'LAN', 'Testing A\r\nTesting B\r\nTesting C', 'Testing D\r\nTesting E\r\nTesting F', '');
 
 -- --------------------------------------------------------
 

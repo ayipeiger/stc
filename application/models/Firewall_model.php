@@ -44,7 +44,8 @@ class Firewall_model extends CI_Model {
 				'is_vdom' => $firewallObject->getIsVdom(),
 				'vdom' => $firewallObject->getNameVdom(),
 				'setup_command' => $firewallObject->getSetupCommandTemplate(),
-				'spesial_command' => $firewallObject->getSpesialCommandTemplate()
+				'spesial_address_command' => $firewallObject->getSpesialCommandAddressTemplate(),
+				'spesial_port_command' => $firewallObject->getSpesialCommandPortTemplate()
 			);
 		$affectedRow = $this->db->insert('firewall', $data);
 		return boolval($affectedRow);
@@ -61,7 +62,8 @@ class Firewall_model extends CI_Model {
 				'is_vdom' => $firewallObject->getIsVdom(),
 				'vdom' => $firewallObject->getNameVdom(),
 				'setup_command' => $firewallObject->getSetupCommandTemplate(),
-				'spesial_command' => $firewallObject->getSpesialCommandTemplate()
+				'spesial_address_command' => $firewallObject->getSpesialCommandAddressTemplate(),
+				'spesial_port_command' => $firewallObject->getSpesialCommandPortTemplate()
 			);
 		$affectedRow = $this->db->update('firewall', $data, array('ip' => $firewallObject->getIp()));
 		return boolval($affectedRow);

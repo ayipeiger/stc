@@ -8,7 +8,8 @@ class FirewallObject implements JsonSerializable {
 	private $isVdom;
 	private $nameVdom;
 	private $setupCommandTemplate;
-	private $spesialCommandTemplate;
+	private $spesialCommandAddressTemplate;
+    private $spesialCommandPortTemplate;
 
 	/**
 	 * Class Constructor
@@ -17,16 +18,18 @@ class FirewallObject implements JsonSerializable {
 	 * @param    $isVdom   
 	 * @param    $nameVdom   
 	 * @param    $setupCommandTemplate   
-	 * @param    $spesialCommandTemplate   
+	 * @param    $spesialCommandAddressTemplate   
+     * @param    $spesialCommandPortTemplate
 	 */
-	public function __construct($ip = null, $port = null, $isVdom = null, $nameVdom = null, $setupCommandTemplate = null, $spesialCommandTemplate = null)
+	public function __construct($ip = null, $port = null, $isVdom = null, $nameVdom = null, $setupCommandTemplate = null, $spesialCommandAddressTemplate = null, $spesialCommandPortTemplate = null)
 	{
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->isVdom = $isVdom;
 		$this->nameVdom = $nameVdom;
 		$this->setupCommandTemplate = $setupCommandTemplate;
-		$this->spesialCommandTemplate = $spesialCommandTemplate;
+		$this->spesialCommandAddressTemplate = $spesialCommandAddressTemplate;
+        $this->spesialCommandPortTemplate = $spesialCommandPortTemplate;
 	}
 	
     /**
@@ -132,19 +135,39 @@ class FirewallObject implements JsonSerializable {
     /**
      * @return mixed
      */
-    public function getSpesialCommandTemplate()
+    public function getSpesialCommandAddressTemplate()
     {
-        return $this->spesialCommandTemplate;
+        return $this->spesialCommandAddressTemplate;
     }
 
     /**
-     * @param mixed $spesialCommandTemplate
+     * @param mixed $spesialCommandAddressTemplate
      *
      * @return self
      */
-    public function setSpesialCommandTemplate($spesialCommandTemplate)
+    public function setSpesialCommandAddressTemplate($spesialCommandAddressTemplate)
     {
-        $this->spesialCommandTemplate = $spesialCommandTemplate;
+        $this->spesialCommandAddressTemplate = $spesialCommandAddressTemplate;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSpesialCommandPortTemplate()
+    {
+        return $this->spesialCommandPortTemplate;
+    }
+
+    /**
+     * @param mixed $spesialCommandPortTemplate
+     *
+     * @return self
+     */
+    public function setSpesialCommandTemplate($spesialCommandPortTemplate)
+    {
+        $this->spesialCommandPortTemplate = $spesialCommandPortTemplate;
 
         return $this;
     }
@@ -156,7 +179,8 @@ class FirewallObject implements JsonSerializable {
             'isVdom' => $this->getIsVdom(),
             'nameVdom' => $this->getNameVdom(),
             'setupCommandTemplate' => $this->getSetupCommandTemplate(),
-            'spesialCommandTemplate' => $this->getSpesialCommandTemplate()
+            'spesialCommandAddressTemplate' => $this->getSpesialCommandAddressTemplate(),
+            'spesialCommandPortTemplate' => $this->getSpesialCommandPortTemplate()
         ];
     }
 
