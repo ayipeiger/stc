@@ -25,7 +25,7 @@ class FirewallService_model extends CI_Model {
 		$this->db->where('portaddress', $portaddress);
 		$resultSet = $this->db->get('firewall_object_services');
 
-		$data = new FirewallServiceObject();
+		$data = array();
 		if($resultSet->num_rows() > 0) {
 			$row = $resultSet->row();
 			$data = new FirewallServiceObject($row->ip, $row->portname, $row->protocol, $row->portaddress);

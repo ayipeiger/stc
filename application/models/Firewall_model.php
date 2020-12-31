@@ -4,14 +4,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Firewall_model extends CI_Model {
 
 	public function find_all_entry($param = '') {
-		$this->db->select('ip, port, is_vdom, vdom, setup_command, spesial_command');
+		$this->db->select('ip, port, is_vdom, vdom, setup_command, spesial_address_command, spesial_port_command');
 		if(!empty($param)) {
 			$this->db->like('ip', $param);
 		}
 		$resultSet = $this->db->get('firewall');
 		$data = array();
 		foreach ($resultSet->result() as $row) {
-			$firewallObj = new FirewallObject($row->ip, $row->port, $row->is_vdom, $row->vdom, $row->setup_command, $row->spesial_command);
+			$firewallObj = new FirewallObject($row->ip, $row->port, $row->is_vdom, $row->vdom, $row->setup_command, $row->spesial_address_command, $row->spesial_port_command);
 			$data[] = $firewallObj;
 		}
 
@@ -19,16 +19,16 @@ class Firewall_model extends CI_Model {
 	}
 
 	public function find_single_entry($ip) {
-		$this->db->select('ip, port, is_vdom, vdom, setup_command, spesial_command');
+		$this->db->select('ip, port, is_vdom, vdom, setup_command, spesial_address_command, spesial_port_command');
 		$this->db->where('ip', $ip);
 		$resultSet = $this->db->get('firewall');
 
-		$data = new FirewallObject();
+		$data = array();
 		if($resultSet->num_rows() > 0) {
 			$row = $resultSet->row();
-			$data = new FirewallObject($row->ip, $row->port, $row->is_vdom, $row->vdom, $row->setup_command, $row->spesial_command);
+			$data = new FirewallObject($row->ip, $row->port, $row->is_vdom, $row->vdom, $row->setup_command, $row->spesial_address_command, $row->spesial_port_command);
 		}
-
+		
 		return $data;
 	}
 

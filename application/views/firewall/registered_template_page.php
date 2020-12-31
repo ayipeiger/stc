@@ -259,8 +259,11 @@
         </div>
 	</div>
 	<div class="content">
-        <h4><?=$firewall->getIp();?></h4>
+        
 		<div class="main-content">
+            <div style="margin-bottom: 20px;">
+                <h4>Firewall : <?=$firewall->getIp();?> Port : <?=$firewall->getPort();?> Vdom : <?=$firewall->getNameVdom();?></h4>
+            </div>
             <div style="margin-bottom: 20px;">
                 <h5>Setup Command Template</h5>
                 <pre><?=nl2br($firewall->getSetupCommandTemplate());?></pre>
@@ -273,16 +276,23 @@
                 <pre><?=nl2br($spesialAddress1);?></pre>
             </div>
             <div style="margin-bottom: 20px;">
-                <h5>Spesial Command Template of Netmas IP</h5>
+                <h5>Spesial Command Template of Netmask IP</h5>
                 <pre><?=nl2br($spesialAddress2);?></pre>
             </div>
             <div style="margin-bottom: 20px;">
                 <h5>Spesial Command Template of Range IP</h5>
                 <pre><?=nl2br($spesialAddress3);?></pre>
             </div>
+            <?php 
+                list($spesialPortTcp, $spesialPortUdp) = explode("~~", $firewall->getSpesialCommandPortTemplate());
+            ?>
             <div style="margin-bottom: 20px;">
-                <h5>Spesial Command Template of Port</h5>
-                <pre><?=nl2br($firewall->getSpesialCommandPortTemplate());?></pre>
+                <h5>Spesial Command Template of Port Tcp</h5>
+                <pre><?=nl2br($spesialPortTcp);?></pre>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <h5>Spesial Command Template of Port Udp</h5>
+                <pre><?=nl2br($spesialPortUdp);?></pre>
             </div>
         </div>
     </div>

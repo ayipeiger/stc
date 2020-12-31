@@ -165,7 +165,7 @@ class FirewallObject implements JsonSerializable {
      *
      * @return self
      */
-    public function setSpesialCommandTemplate($spesialCommandPortTemplate)
+    public function setSpesialCommandPortTemplate($spesialCommandPortTemplate)
     {
         $this->spesialCommandPortTemplate = $spesialCommandPortTemplate;
 

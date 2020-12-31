@@ -128,7 +128,13 @@
             lastTextAreaFocused = $(this);
         });
 
-        $("textarea.")
+        $("textarea.spesial-address-command").focus(function() {
+            lastTextAreaSpesialAddressCmdFocused = $(this);
+        });
+
+        $("textarea.spesial-port-command").focus(function() {
+            lastTextAreaSpesialPortCmdFocused = $(this);
+        });
 
         $('#btn-reqnum').click(function(){
             var area   = $('#txtarea-setup-template');
@@ -161,13 +167,13 @@
         });
 
         $('#btn-ipnew').click(function(){
-            var area   = $('#txtarea-spesial-template');
+            var area   = lastTextAreaSpesialAddressCmdFocused;
             var curPos = area.prop('selectionEnd');
             area.val( area.val().substring(0, curPos) + '{#IPNEW}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+8, 'selectionEnd': curPos+8});
         });
 
         $('#btn-ipname').click(function(){
-            var area   = $('#txtarea-spesial-template');
+            var area   = lastTextAreaSpesialAddressCmdFocused;
             var curPos = area.prop('selectionEnd');
             area.val( area.val().substring(0, curPos) + '{#IPNAME}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+9, 'selectionEnd': curPos+9});
         });
@@ -185,13 +191,13 @@
         });
 
         $('#btn-portnew').click(function(){
-            var area   = $('#txtarea-spesial-port-template');
+            var area   = lastTextAreaSpesialPortCmdFocused;
             var curPos = area.prop('selectionEnd');
             area.val( area.val().substring(0, curPos) + '{#PORTNEW}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+10, 'selectionEnd': curPos+10});
         });
 
         $('#btn-portname').click(function(){
-            var area   = $('#txtarea-spesial-port-template');
+            var area   = lastTextAreaSpesialPortCmdFocused;
             var curPos = area.prop('selectionEnd');
             area.val( area.val().substring(0, curPos) + '{#PORTNAME}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+11, 'selectionEnd': curPos+11});
         });
@@ -267,16 +273,17 @@
             <div class="form-group">
                 <div class="row">
                     <div class="col-xs-12">
-                        <textarea class="form-control spesial-command" id="txtarea-spesial-address-1-template" name="spesial_command_address1_template" rows="2" placeholder="Your Spesial Command Template For IP Single Digit Here.."></textarea>
-                        <textarea class="form-control spesial-command" id="txtarea-spesial-address-2-template" name="spesial_command_address2_template" rows="2" placeholder="Your Spesial Command Template For IP with Subnet Here.."></textarea>
-                        <textarea class="form-control spesial-command" id="txtarea-spesial-address-3-template" name="spesial_command_address3_template" rows="2" placeholder="Your Spesial Command Template For IP with Range Here.."></textarea>
+                        <textarea class="form-control spesial-address-command" id="txtarea-spesial-address-1-template" name="spesial_command_address1_template" rows="2" placeholder="Your Spesial Command Template For IP Single Digit Here.."></textarea>
+                        <textarea class="form-control spesial-address-command" id="txtarea-spesial-address-2-template" name="spesial_command_address2_template" rows="2" placeholder="Your Spesial Command Template For IP with Subnet Here.."></textarea>
+                        <textarea class="form-control spesial-address-command" id="txtarea-spesial-address-3-template" name="spesial_command_address3_template" rows="2" placeholder="Your Spesial Command Template For IP with Range Here.."></textarea>
                     </div>
                 </div>
             </div>
             <div class="form-group">
                 <div class="row">
                     <div class="col-xs-12">
-                        <textarea class="form-control" id="txtarea-spesial-port-template" name="spesial_command_port_template" rows="2" placeholder="Your Spesial Command Template For Port Here.."></textarea>
+                        <textarea class="form-control spesial-port-command" id="txtarea-spesial-port-tcp-template" name="spesial_command_port_tcp_template" rows="2" placeholder="Your Spesial Command Template For Port Tcp Here.."></textarea>
+                        <textarea class="form-control spesial-port-command" id="txtarea-spesial-port-udp-template" name="spesial_command_port_udp_template" rows="2" placeholder="Your Spesial Command Template For Port Udp Here.."></textarea>
                     </div>
                 </div>
             </div>
