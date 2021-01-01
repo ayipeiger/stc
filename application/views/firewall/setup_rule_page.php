@@ -230,8 +230,35 @@
                 document.location = '<?=site_url('Firewall/disconnect')?>';
             }
         });
+        
+        // $('#form-generate').submit(function(){
+        //     $.ajax({
+        //         url: $('#form-generate').attr('action'),
+        //         type: 'post',
+        //         dataType: 'html',
+        //         data: $('#form-generate').serialize(),
+        //         beforeSend: function() {
+        //             $('#ajax-loader').show();
+        //         },
+        //         error: function() {
+        //             $('#ajax-loader').hide();
+        //         },
+        //         success: function(response) {
+        //             $('#template-content').html(response);
+        //             $('#ajax-loader').hide();
+        //         }
+        //     });
 
-        $('#form-generate').submit(function(){
+        //     return false;
+        // });
+
+        $('.content').off('submit', '#form-generate');
+        $('.content').on('submit', '#form-generate', function(){
+            // if(confirm('Are you sure to show object service for this firewall?')) {
+            //     window.open("<?=site_url('Firewall/registered_service')?>?ip="+$(this).val(),"_self");
+            // }
+            // return false;
+
             $.ajax({
                 url: $('#form-generate').attr('action'),
                 type: 'post',
@@ -244,11 +271,36 @@
                     $('#ajax-loader').hide();
                 },
                 success: function(response) {
-                    $('#generate-template-content').html(response);
+                    $('#template-content').html(response);
                     $('#ajax-loader').hide();
                 }
             });
 
+            return false;
+        });
+
+        $('.content').off('submit', '#form-execute');
+        $('.content').on('submit', '#form-execute', function(){
+
+            if(confirm("Are you sure to execute this command?")) {
+                $.ajax({
+                    url: $('#form-execute').attr('action'),
+                    type: 'post',
+                    dataType: 'html',
+                    data: $('#form-execute').serialize(),
+                    beforeSend: function() {
+                        $('#ajax-loader').show();
+                    },
+                    error: function() {
+                        $('#ajax-loader').hide();
+                    },
+                    success: function(response) {
+                        // $('#template-content').html(response);
+                        $('#ajax-loader').hide();
+                    }
+                });
+            }
+            
             return false;
         });
     });
@@ -329,7 +381,7 @@
                     </form> 
                 </div>
                 <div class="col-sm-6">
-                    <div id="generate-template-content">
+                    <div id="template-content">
                         
                     </div>
                 </div>
