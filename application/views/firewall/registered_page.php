@@ -425,8 +425,8 @@
 					<thead>
 						<tr>
 							<th>Host</th>
+                            <th>Code Name</th>
 							<th>Port</th>
-							<th>Use Vdom</th>
 							<th>Vdom Name</th>
                             <th align="center">Template</th>
 							<th align="center">Addresses</th>
@@ -438,9 +438,9 @@
 						<?php if(is_array($arrFirewall) && count($arrFirewall)>0): ?>
 							<?php foreach($arrFirewall as $firewallObj): ?>
 								<tr>
-									<td align="right"><?=$firewallObj->getIp()?></td>
+									<td align="center"><?=$firewallObj->getIp()?></td>
+                                    <td align="center"><?=$firewallObj->getCode() && !empty($firewallObj->getCode()) ? $firewallObj->getCode() : 'n/a'?></td>
 									<td align="right"><?=$firewallObj->getPort()?></td>
-									<td align="center"><?=$firewallObj->getIsVdom() ? 'true' : 'false'?></td>
 									<td align="center"><?=$firewallObj->getNameVdom() && !empty($firewallObj->getNameVdom()) ? $firewallObj->getNameVdom() : 'n/a'?></td>
 									<td align="center">
                                         <button class="btn btn-sm btn-warning btn-show-template" value="<?=$firewallObj->getIp()?>"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> View</button>
@@ -465,9 +465,10 @@
 					<thead>
 						<tr>
 							<th>Host</th>
+                            <th>Code Name</th>
 							<th>Port</th>
-							<th>Use Vdom</th>
 							<th>Vdom name</th>
+                            <th align="center">Template</th>
                             <th align="center">Addresses</th>
                             <th align="center">Services</th>
                             <th align="center">Delete</th>

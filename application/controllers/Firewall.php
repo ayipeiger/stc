@@ -527,7 +527,7 @@ class Firewall extends CI_Controller {
             $spesialCommandPortTemplate = $spesialCommandPortTcpTemplate."~~".$spesialCommandPortUdpTemplate;
 
 
-            $firewallObj = new FirewallObject($this->input->post('firewall'), $this->input->post('port'), $this->input->post('vdom')<>'' ? true : false, $this->input->post('vdom'), $this->input->post('setup_command_template'), $spesialCommandAddressTemplate, $spesialCommandPortTemplate);
+            $firewallObj = new FirewallObject($this->input->post('firewall'), $this->input->post('firewall_code'), $this->input->post('port'), $this->input->post('vdom')<>'' ? true : false, $this->input->post('vdom'), $this->input->post('setup_command_template'), $spesialCommandAddressTemplate, $spesialCommandPortTemplate);
             $result = $this->firewall_model->insert_entry($firewallObj);
         }
 		$this->load->view('firewall/register_page', $data);

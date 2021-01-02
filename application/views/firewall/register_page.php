@@ -232,6 +232,13 @@
             </div>
             <div class="form-group">
                 <div class="row">
+                    <div class="col-xs-12">
+                        <input type="text" id="firewall-code" name="firewall_code" class="form-control" placeholder="Firewall Code" required="required" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
                     <div class="col-xs-6">
                         <input type="text" id="port" name="port" class="form-control" placeholder="Port" required="required">
                     </div>

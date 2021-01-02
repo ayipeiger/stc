@@ -5,6 +5,7 @@ class FirewallObject implements JsonSerializable {
 
 	private $ip;
 	private $port;
+    private $code;
 	private $isVdom;
 	private $nameVdom;
 	private $setupCommandTemplate;
@@ -15,16 +16,18 @@ class FirewallObject implements JsonSerializable {
 	 * Class Constructor
 	 * @param    $ip   
 	 * @param    $port   
+     * @param    $code
 	 * @param    $isVdom   
 	 * @param    $nameVdom   
 	 * @param    $setupCommandTemplate   
 	 * @param    $spesialCommandAddressTemplate   
      * @param    $spesialCommandPortTemplate
 	 */
-	public function __construct($ip = null, $port = null, $isVdom = null, $nameVdom = null, $setupCommandTemplate = null, $spesialCommandAddressTemplate = null, $spesialCommandPortTemplate = null)
+	public function __construct($ip = null, $code = null, $port = null, $isVdom = null, $nameVdom = null, $setupCommandTemplate = null, $spesialCommandAddressTemplate = null, $spesialCommandPortTemplate = null)
 	{
 		$this->ip = $ip;
 		$this->port = $port;
+        $this->code = $code;
 		$this->isVdom = $isVdom;
 		$this->nameVdom = $nameVdom;
 		$this->setupCommandTemplate = $setupCommandTemplate;
@@ -41,13 +44,33 @@ class FirewallObject implements JsonSerializable {
     }
 
     /**
-     * @param mixed $ip
+     * @param mixed $code
      *
      * @return self
      */
     public function setIp($ip)
     {
         $this->ip = $ip;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param mixed $code
+     *
+     * @return self
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
 
         return $this;
     }
