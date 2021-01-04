@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="<?=base_url('assets/css/dataTables.bootstrap.min.css')?>">
 <script src="<?=base_url('assets/js/jquery-3.3.1.js')?>"></script>
 <script src="<?=base_url('assets/js/bootstrap.min.js')?>"></script>
+<script src="<?=base_url('assets/js/bootstrap-autocomplete.min.js')?>"></script>
 <script src="<?=base_url('assets/js/jquery.dataTables.min.js')?>"></script>
 <script src="<?=base_url('assets/js/dataTables.bootstrap.min.js')?>"></script>
 <script src="<?=base_url('assets/js/jquery.form.min.js')?>"></script>
@@ -230,34 +231,37 @@
                 document.location = '<?=site_url('Firewall/disconnect')?>';
             }
         });
-        
-        // $('#form-generate').submit(function(){
-        //     $.ajax({
-        //         url: $('#form-generate').attr('action'),
-        //         type: 'post',
-        //         dataType: 'html',
-        //         data: $('#form-generate').serialize(),
-        //         beforeSend: function() {
-        //             $('#ajax-loader').show();
-        //         },
-        //         error: function() {
-        //             $('#ajax-loader').hide();
-        //         },
-        //         success: function(response) {
-        //             $('#template-content').html(response);
-        //             $('#ajax-loader').hide();
-        //         }
-        //     });
 
-        //     return false;
-        // });
+        $('#firewall').autoComplete({
+            resolverSettings: {
+                url: '<?=site_url('Firewall/list_firewall')?>'
+            },
+            formatResult: function (item) {
+                return {
+                    value: 0,
+                    text: item
+                };
+            },
+            minLength: 3,
+            noResultsText: "No data found"
+        });
+
+        // $('#firewall').off('autocomplete.select');
+        $('#firewall').on('autocomplete.select', function (evt, value) {
+            var arrObj = value.split('|');
+            if(arrObj[0] != 'undefined') {
+                $('#firewall').val(arrObj[0].trim());
+            }
+            if(arrObj[1] != 'undefined') {
+                // $('#port').val(arrObj[1].trim());
+            }
+            if(arrObj[2] != 'undefined') {
+                // $('#vdom').val(arrObj[2].trim());
+            }
+        });
 
         $('.content').off('submit', '#form-generate');
         $('.content').on('submit', '#form-generate', function(){
-            // if(confirm('Are you sure to show object service for this firewall?')) {
-            //     window.open("<?=site_url('Firewall/registered_service')?>?ip="+$(this).val(),"_self");
-            // }
-            // return false;
 
             $.ajax({
                 url: $('#form-generate').attr('action'),
@@ -295,7 +299,7 @@
                         $('#ajax-loader').hide();
                     },
                     success: function(response) {
-                        // $('#template-content').html(response);
+                        $('#template-content').html(response);
                         $('#ajax-loader').hide();
                     }
                 });
@@ -323,7 +327,7 @@
                 <span class="header-title"><?=$this->config->item('app_name')?></span>
             </div>
             <div class="col-lg-4 col-md-4 text-right">
-                <span style="margin-right: 15px; font-size: 12px;">Logged As <?=$this->session->userdata('firewall_ip')?></span>
+                <span style="margin-right: 15px; font-size: 12px;">Logged As <?=$this->session->userdata('firewall_user')?></span>
                 <button type="button" id="btn-logout" class="btn btn-info btn-sm">
                     <span class="glyphicon glyphicon-off" aria-hidden="true"></span> Disconnect
                 </button>
@@ -370,13 +374,13 @@
                                 </div>
                             </div>
                         </div>
-                        <!--
-                        <div class="alert alert-danger" role="alert">
-                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                            <span class="sr-only">Error:</span>
-                            Error ney yeee..
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <input type="text" id="firewall" name="firewall" class="form-control" placeholder="Firewall" required="required" autocomplete="off">
+                                </div>
+                            </div>
                         </div>
-                        -->
                         <button type="submit" name="submit" class="btn btn-primary btn-block btn-lg" value="generate">Generate</button>
                     </form> 
                 </div>

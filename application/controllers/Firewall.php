@@ -656,8 +656,9 @@ class Firewall extends CI_Controller {
         $postIpDestination = str_replace(" ", "", $this->input->post('ip_destination'));
         $postTcpPort = str_replace(" ", "", $this->input->post('tcp_port'));
         $postUdpPort = str_replace(" ", "", $this->input->post('udp_port'));
+        $postFirewall = $this->input->post('firewall');
 
-        $firewallObj = $this->firewall_model->find_single_entry($this->session->userdata("firewall_ip"));
+        $firewallObj = $this->firewall_model->find_single_entry($postFirewall);
         $mappingNotFound = false;
         $mappingNotFoundDesc = "We found that : ";
 
@@ -667,13 +668,19 @@ class Firewall extends CI_Controller {
         $arrParsedIpSource = array();
         $arrNotFoundIpSource = array();
         foreach($arrIpSource as $row) {
-            $ipSrcFirewallObj = $this->firewalladdress_model->find_by_address($this->session->userdata("firewall_ip"), $row);
+            $ipSrcFirewallObj = $this->firewalladdress_model->find_by_address($postFirewall, $row);
             if($ipSrcFirewallObj instanceof FirewallAddressObject) {
                 $arrParsedIpSource[] = $ipSrcFirewallObj->getIpname();
             } else {
                 $mappingNotFound = true;
                 $mappingNotFoundDesc .= " IP ".$row." doesn't exist\r\n".PHP_EOL;
-                $selectedParsedIpSource = str_replace("/", "_", $row);
+                if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\-(\d{1,3})$/', $row, $matches)) { // if IP range
+                    $selectedParsedIpSource = $row;
+                } else if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\/(\d{1,2})$/', $row, $matches)) { // if IP subnet
+                    $selectedParsedIpSource = str_replace("/", "_", $row);
+                } else if(preg_match_all("/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})$/", $row, $matches)) { // if IP single
+                    $selectedParsedIpSource = $row."_32";
+                }
                 $arrNotFoundIpSource[$row] = $selectedParsedIpSource;
             }
         }
@@ -683,16 +690,21 @@ class Firewall extends CI_Controller {
         $arrParsedIpDestination = array();
         $arrNotFoundIpDestination = array();
         foreach($arrIpDestination as $row) {
-            $ipDestFirewallObj = $this->firewalladdress_model->find_by_address($this->session->userdata("firewall_ip"), $row);
+            $ipDestFirewallObj = $this->firewalladdress_model->find_by_address($postFirewall, $row);
             if($ipDestFirewallObj instanceof FirewallAddressObject) {
                 $arrParsedIpDestination[] = $ipDestFirewallObj->getIpname();
             } else {
                 $mappingNotFound = true;
                 $mappingNotFoundDesc .= " IP ".$row." doesn't exist\r\n".PHP_EOL;
-                $selectedParsedIpDestination = str_replace("/", "_", $row);
+                if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\-(\d{1,3})$/', $row, $matches)) { // if IP range
+                    $selectedParsedIpDestination = $row;
+                } else if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\/(\d{1,2})$/', $row, $matches)) { // if IP subnet
+                    $selectedParsedIpDestination = str_replace("/", "_", $row);
+                } else if(preg_match_all("/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})$/", $row, $matches)) { // if IP single
+                    $selectedParsedIpDestination = $row."_32";
+                }
                 $arrNotFoundIpDestination[$row] = $selectedParsedIpDestination;
             }
-            
         }
         $parsedIpDestination = implode(" ", $arrParsedIpDestination);
 
@@ -700,7 +712,7 @@ class Firewall extends CI_Controller {
         $arrParsedTcpPort = array();
         $arrNotFoundTcpPort = array();
         foreach($arrTcpPort as $row) {
-            $tcpPortFirewallObj = $this->firewallservice_model->find_by_portaddress($this->session->userdata("firewall_ip"), "TCP", $row);
+            $tcpPortFirewallObj = $this->firewallservice_model->find_by_portaddress($postFirewall, "TCP", $row);
             if($tcpPortFirewallObj instanceof FirewallServiceObject) {
                 $arrParsedTcpPort[] = $tcpPortFirewallObj->getPortname();
             } else {
@@ -716,7 +728,7 @@ class Firewall extends CI_Controller {
         $arrParsedUdpPort = array();
         $arrNotFoundUdpPort = array();
         foreach ($arrUdpPort as $row) {
-            $udpPortFirewallObj = $this->firewallservice_model->find_by_portaddress($this->session->userdata("firewall_ip"), "UDP", $row);
+            $udpPortFirewallObj = $this->firewallservice_model->find_by_portaddress($postFirewall, "UDP", $row);
             if($udpPortFirewallObj instanceof FirewallServiceObject) {
                 $arrParsedUdpPort[] = $udpPortFirewallObj->getPortname();
             } else {
@@ -725,7 +737,6 @@ class Firewall extends CI_Controller {
                 $selectedParsedUdpPort= $row."-udp";
                 $arrNotFoundUdpPort[$row] = $selectedParsedUdpPort;
             }
-            
         }
         $parsedUdpPort = implode(" ", $arrParsedUdpPort);
         
@@ -827,83 +838,162 @@ class Firewall extends CI_Controller {
         
         $data['mappingNotFound'] = $mappingNotFound;
         $data['mappingNotFoundDesc'] = $mappingNotFoundDesc;
+        $data['arrNotFoundIpSource'] = $arrNotFoundIpSource;
+        $data['arrNotFoundIpDestination'] = $arrNotFoundIpDestination;
+        $data['arrNotFoundTcpPort'] = $arrNotFoundTcpPort;
+        $data['arrNotFoundUdpPort'] = $arrNotFoundUdpPort;
         $data['firewall'] = $firewallObj;
         $this->load->view('firewall/generate_command_template', $data);
     }
 
     public function execute_command_template()
     {
+        $postFirewall = $this->input->post('firewall');
         $postSetupCommand = $this->input->post('setup_command');
+        $postArrNotFoundIpSource = json_decode($this->input->post('arr_not_found_ipsource'), true);
+        $postArrNotFoundIpDestination = json_decode($this->input->post('arr_not_found_ipdestination'), true);
+        $postArrNotFoundTcpPort = json_decode($this->input->post('arr_not_found_tcpport'), true);
+        $postArrNotFoundUdpPort = json_decode($this->input->post('arr_not_found_udpport'), true);
         $postAddressCommand = $this->input->post('address_command');
         $postPortCommand = $this->input->post('port_command');
+        $firewallObj = $this->firewall_model->find_single_entry($postFirewall);
 
-        var_dump($postSetupCommand);
-        var_dump($postAddressCommand);
-        var_dump($postPortCommand);
-        die;
+        if(count($postArrNotFoundIpSource) > 0) {
+            $arrFirewallAddressObj = array();
+            foreach($postArrNotFoundIpSource as $key => $val) {
+                $arrFirewallAddressObj[] = new FirewallAddressObject($firewallObj->getIp(), $val, 'IP Netmask', $key);
+            }
+            $this->firewalladdress_model->insert_batch_entry($arrFirewallAddressObj);
+        }
+
+        if(count($postArrNotFoundIpDestination) > 0) {
+            $arrFirewallAddressObj = array();
+            foreach($postArrNotFoundIpDestination as $key => $val) {
+                $arrFirewallAddressObj[] = new FirewallAddressObject($firewallObj->getIp(), $val, 'IP Netmask', $key);
+            }
+            $this->firewalladdress_model->insert_batch_entry($arrFirewallAddressObj);
+        }
+
+        if(count($postArrNotFoundTcpPort) > 0) {
+            $arrFirewallServiceObj = array();
+            foreach($postArrNotFoundTcpPort as $key => $val) {
+                $arrFirewallServiceObj[] = new FirewallServiceObject($firewallObj->getIp(), $val, 'TCP', $key);
+            }
+            $this->firewallservice_model->insert_batch_entry($arrFirewallServiceObj);
+        }
+
+        if(count($postArrNotFoundUdpPort) > 0) {
+            $arrFirewallServiceObj = array();
+            foreach($postArrNotFoundUdpPort as $key => $val) {
+                $arrFirewallServiceObj[] = new FirewallServiceObject($firewallObj->getIp(), $val, 'UDP', $key);
+            }
+            $this->firewallservice_model->insert_batch_entry($arrFirewallServiceObj);
+        }
 
         if($postSetupCommand) {
+            $arrCommand = array_filter(preg_split('/[\r\n]+/', $postSetupCommand));
+            
+            $strCommand = implode(" && ", $arrCommand);
 
+            $connection = ssh2_connect($firewallObj->getIp(), $firewallObj->getPort());
+            if($connection) {
+                $authentication = ssh2_auth_password($connection, $this->session->userdata('firewall_user'), $this->session->userdata('firewall_pass'));
+
+                if($authentication) {
+                    $stdout_stream = ssh2_exec($connection, $strCommand);
+
+                    $sio_stream = ssh2_fetch_stream($stdout_stream, SSH2_STREAM_STDIO);
+                    $err_stream = ssh2_fetch_stream($stdout_stream, SSH2_STREAM_STDERR);
+
+                    stream_set_blocking($sio_stream, true);
+                    stream_set_blocking($err_stream, true);
+
+                    $result_dio = stream_get_contents($sio_stream);
+                    $result_err = stream_get_contents($err_stream);
+
+                    echo 'stderr: ';
+                    echo nl2br($result_err);
+                    echo 'stdio : ';
+                    echo nl2br($result_dio);
+                } else {
+                    echo "Authentication failed"; die;
+                }
+                
+            } else {
+                echo "Connection failed"; die;
+            }
         }
 
         if($postAddressCommand) {
+            $arrCommand = array_filter(preg_split('/[\r\n]+/', $postAddressCommand));
+            
+            $strCommand = implode(" && ", $arrCommand);
 
+            $connection = ssh2_connect($firewallObj->getIp(), $firewallObj->getPort());
+            if($connection) {
+                $authentication = ssh2_auth_password($connection, $this->session->userdata('firewall_user'), $this->session->userdata('firewall_pass'));
+
+                if($authentication) {
+                    $stdout_stream = ssh2_exec($connection, $strCommand);
+
+                    $sio_stream = ssh2_fetch_stream($stdout_stream, SSH2_STREAM_STDIO);
+                    $err_stream = ssh2_fetch_stream($stdout_stream, SSH2_STREAM_STDERR);
+
+                    stream_set_blocking($sio_stream, true);
+                    stream_set_blocking($err_stream, true);
+
+                    $result_dio = stream_get_contents($sio_stream);
+                    $result_err = stream_get_contents($err_stream);
+
+                    echo 'stderr: ';
+                    echo nl2br($result_err);
+                    echo 'stdio : ';
+                    echo nl2br($result_dio);
+                } else {
+                    echo "Authentication failed"; die;
+                }
+                
+            } else {
+                echo "Connection failed"; die;
+            }
         }
 
         if($postPortCommand) {
+            $arrCommand = array_filter(preg_split('/[\r\n]+/', $postPortCommand));
+            
+            $strCommand = implode(" && ", $arrCommand);
 
-        }
+            $connection = ssh2_connect($firewallObj->getIp(), $firewallObj->getPort());
+            if($connection) {
+                $authentication = ssh2_auth_password($connection, $this->session->userdata('firewall_user'), $this->session->userdata('firewall_pass'));
 
-        $data = array();
-        $connection = ssh2_connect($this->session->userdata('firewall_ip'), $this->session->userdata('firewall_port'));
-        if($connection) {
-            $authentication = ssh2_auth_password($connection, $this->session->userdata('firewall_user'), $this->session->userdata('firewall_pass'));
-            if($authentication) {
-                $shell = ssh2_shell($connection);
+                if($authentication) {
+                    $stdout_stream = ssh2_exec($connection, $strCommand);
 
-                if($this->session->userdata("firewall_isvdom")) {
-                    fwrite($shell, "config vdom".PHP_EOL);
-                    usleep(300000);
-                    // echo stream_get_contents($shell)."<br>";
-                    fwrite($shell, "edit ".$this->session->userdata("firewall_vdom").PHP_EOL);
-                    usleep(300000);
-                    // echo stream_get_contents($shell)."<br>";
+                    $sio_stream = ssh2_fetch_stream($stdout_stream, SSH2_STREAM_STDIO);
+                    $err_stream = ssh2_fetch_stream($stdout_stream, SSH2_STREAM_STDERR);
+
+                    stream_set_blocking($sio_stream, true);
+                    stream_set_blocking($err_stream, true);
+
+                    $result_dio = stream_get_contents($sio_stream);
+                    $result_err = stream_get_contents($err_stream);
+
+                    echo 'stderr: ';
+                    echo nl2br($result_err);
+                    echo 'stdio : ';
+                    echo nl2br($result_dio);
+                } else {
+                    echo "Authentication failed"; die;
                 }
-                fwrite($shell, "config firewall policy".PHP_EOL);
-                usleep(300000);
-                // echo stream_get_contents($shell)."<br>";
-                fwrite($shell, "edit ".$policy_id.PHP_EOL);
-                usleep(300000);
-                // echo stream_get_contents($shell)."<br>";
-                fwrite($shell, "set status disable".PHP_EOL);
-                usleep(300000);
-                // echo stream_get_contents($shell)."<br>";
-                fwrite($shell, "next".PHP_EOL);
-                usleep(300000);
-                // echo stream_get_contents($shell)."<br>";
-                fwrite($shell, "end".PHP_EOL);
-                usleep(300000);
-                // echo stream_get_contents($shell)."<br>";
-                if($this->session->userdata("firewall_isvdom")) {
-                    fwrite($shell, "end".PHP_EOL);
-                    usleep(300000);
-                    // echo stream_get_contents($shell)."<br>";
-                }
-                fclose($shell);
-
-                $this->insert_log(trim($policy_id), trim($src_resolved), trim($dest_resolved), trim($service_resolved), trim($action), trim($hit), "disable", date("Y-m-d H:i:s"), $this->session->userdata('firewall_user'));
-                $data['result'] = true;
-                $data['success_id'] = $policy_id;
-                $data['result_message'] = "The policy id ".$policy_id." has been successfull disable";
+                
             } else {
-                $data['result'] = false;
-                $data['result_message'] = "Authentication failed for ".$this->session->userdata('firewall_user')." using password";
+                echo "Connection failed"; die;
             }
-        } else {
-            $data['result'] = false;
-            $data['result_message'] = "Cannot connecting to ".$this->session->userdata('firewall_ip')." through port ".$this->session->userdata('firewall_port').". Please contact your administrator.";
-        }    
-
+        }
+        
+        $data = array();
+        $this->load->view('firewall/execute_command_template', $data);
     }
 
     public function execute_test()
