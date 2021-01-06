@@ -232,9 +232,13 @@
             }
         });
 
+        $('#btn-menu').click(function(){
+            document.location = '<?=site_url('Firewall/sub_menu')?>';
+        });
+
         $('#firewall').autoComplete({
             resolverSettings: {
-                url: '<?=site_url('Firewall/list_firewall')?>'
+                url: '<?=site_url('Firewall/list_firewallcode')?>'
             },
             formatResult: function (item) {
                 return {
@@ -245,18 +249,11 @@
             minLength: 3,
             noResultsText: "No data found"
         });
-
-        // $('#firewall').off('autocomplete.select');
+        
         $('#firewall').on('autocomplete.select', function (evt, value) {
             var arrObj = value.split('|');
             if(arrObj[0] != 'undefined') {
                 $('#firewall').val(arrObj[0].trim());
-            }
-            if(arrObj[1] != 'undefined') {
-                // $('#port').val(arrObj[1].trim());
-            }
-            if(arrObj[2] != 'undefined') {
-                // $('#vdom').val(arrObj[2].trim());
             }
         });
 
@@ -328,6 +325,9 @@
             </div>
             <div class="col-lg-4 col-md-4 text-right">
                 <span style="margin-right: 15px; font-size: 12px;">Logged As <?=$this->session->userdata('firewall_user')?></span>
+                <button type="button" id="btn-menu" class="btn btn-info btn-sm">
+                    <span class="glyphicon glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span>
+                </button>
                 <button type="button" id="btn-logout" class="btn btn-info btn-sm">
                     <span class="glyphicon glyphicon-off" aria-hidden="true"></span> Disconnect
                 </button>
@@ -342,42 +342,42 @@
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-xs-12">
-                                    <input type="text" id="request_number" name="request_number" class="form-control" placeholder="SCR Request No" required="required" autocomplete="off">
+                                    <input type="text" id="request_number" name="request_number" class="form-control" placeholder="SCR Request No" required="required" value="<?=$requestNumber?>" autocomplete="off">
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-xs-12">
-                                    <input type="text" id="ip_source" name="ip_source" class="form-control" placeholder="Source IP #" required="required" autocomplete="off">
+                                    <input type="text" id="ip_source" name="ip_source" class="form-control" placeholder="Source IP #" required="required" value="<?=$ipSource?>" autocomplete="off">
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-xs-12">
-                                    <input type="text" id="ip_destination" name="ip_destination" class="form-control" placeholder="Destination IP #" required="required" autocomplete="off">
+                                    <input type="text" id="ip_destination" name="ip_destination" class="form-control" placeholder="Destination IP #" required="required" value="<?=$ipDestination?>" autocomplete="off">
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-xs-12">
-                                    <input type="text" id="tcp_port" name="tcp_port" class="form-control" placeholder="TCP Port" required="required" autocomplete="off">
+                                    <input type="text" id="tcp_port" name="tcp_port" class="form-control" placeholder="TCP Port"  value="<?=$tcpPort?>" autocomplete="off">
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-xs-12">
-                                    <input type="text" id="udp_port" name="udp_port" class="form-control" placeholder="UDP Port" required="required" autocomplete="off">
+                                    <input type="text" id="udp_port" name="udp_port" class="form-control" placeholder="UDP Port" value="<?=$udpPort?>" autocomplete="off">
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-xs-12">
-                                    <input type="text" id="firewall" name="firewall" class="form-control" placeholder="Firewall" required="required" autocomplete="off">
+                                    <input type="text" id="firewall" name="firewall" class="form-control" placeholder="Firewall" required="required" value="<?=$firewallCode?>" autocomplete="off">
                                 </div>
                             </div>
                         </div>

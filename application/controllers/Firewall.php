@@ -10,52 +10,23 @@ class Firewall extends CI_Controller {
         $this->load->model('firewall_model');
         $this->load->model('firewalladdress_model');
         $this->load->model('firewallservice_model');
+        $this->load->model('firewalluser_model');
+        $this->load->model('firewallrequest_model');
     }
 
 	public function connection()
 	{
 		$data = array();
 		if($this->input->post('submit')=='login') {
-            $this->session->set_userdata("is_connected", true);
-            // set session IP, PORT, FortiOS version
-            $this->session->set_userdata("firewall_ip", $this->input->post('firewall'));
-            $this->session->set_userdata("firewall_port", $this->input->post('port'));
-            $this->session->set_userdata("firewall_isvdom", $this->input->post('vdom') ? true : false);
-            $this->session->set_userdata("firewall_vdom", $this->input->post('vdom'));
-            $this->session->set_userdata("firewall_user", $this->input->post('username'));
-            $this->session->set_userdata("firewall_pass", $this->input->post('password'));
-            redirect('Firewall/sub_menu');
-			// ini_set('default_socket_timeout', 3);
-			// $connection = ssh2_connect($this->input->post('firewall'), $this->input->post('port'));
-			// if($connection) {
-			// 	$authentication = ssh2_auth_password($connection, $this->input->post('username'), $this->input->post('password'));
-			// 	if($authentication) {
-			// 		$stdout_stream = ssh2_exec($connection, "get system status");
-			// 		$dio_stream = ssh2_fetch_stream($stdout_stream, SSH2_STREAM_STDIO);
-			// 		stream_set_blocking($dio_stream, true);
-			// 		while($line=fgets($dio_stream)){
-			// 			if(preg_match('/Version:\s(.*)/', $line, $output)) {
-   //                          $this->session->set_userdata("firewall_version", isset($output[1]) && $output[1] ? $output[1] : "n/a");
-   //                      }
-   //                      if(preg_match('/Hostname:\s(.*)/', $line, $output)) {
-   //                          $this->session->set_userdata("firewall_hostname", isset($output[1]) && $output[1] ? $output[1] : "n/a");
-   //                      }
-			// 		}
-			// 		$this->session->set_userdata("is_connected", true);
-			// 		// set session IP, PORT, FortiOS version
-			// 		$this->session->set_userdata("firewall_ip", $this->input->post('firewall'));
-			// 		$this->session->set_userdata("firewall_port", $this->input->post('port'));
-   //                  $this->session->set_userdata("firewall_isvdom", $this->input->post('vdom') ? true : false);
-   //                  $this->session->set_userdata("firewall_vdom", $this->input->post('vdom'));
-			// 		$this->session->set_userdata("firewall_user", $this->input->post('username'));
-			// 		$this->session->set_userdata("firewall_pass", $this->input->post('password'));
-			// 		redirect('Firewall/cleanup_rule');
-			// 	} else {
-			// 		$data['error_message'] = "Authentication failed for ".$this->input->post('username')." using password";
-			// 	}
-			// } else {
-			// 	$data['error_message'] = "Cannot connecting to ".$this->input->post('firewall')." through port ".$this->input->post('port').". Please contact your administrator.";
-			// }
+            $authenticated = $this->firewalluser_model->authenticate($this->input->post('username'), $this->input->post('password'));
+            if($authenticated) {
+                $this->session->set_userdata("is_connected", true);
+                $this->session->set_userdata("firewall_user", $this->input->post('username'));
+                $this->session->set_userdata("firewall_pass", $this->input->post('password'));
+                redirect('Firewall/sub_menu');
+            } else {
+                $data['error_message'] = "Username and Password are wrong!";
+            }
 		} else {
             if($this->session->userdata("is_connected")) {
                 redirect('Firewall/cleanup_rule');
@@ -97,10 +68,25 @@ class Firewall extends CI_Controller {
 		redirect('Firewall/connection');
 	}
 
-    public function setup_rule()
+    public function setup_request()
     {
         if($this->session->userdata('is_connected')) {
             $data = array();
+            $data['arrRequest'] = $this->firewallrequest_model->inquiry_summary();
+            $this->load->view('firewall/setup_request_page', $data);
+        }
+    }
+
+    public function setup_rule($requestNumber = null, $bidirectional = null, $ipSource = null, $ipDestination = null, $tcpPort = null, $udpPort = null, $firewallCode = null)
+    {
+        if($this->session->userdata('is_connected')) {
+            $data['requestNumber'] = isset($requestNumber) ? $requestNumber : '';
+            $data['bidirectional'] = isset($bidirectional) ? $bidirectional : '';
+            $data['ipSource'] = isset($ipSource) ? $ipSource : '';
+            $data['ipDestination'] = isset($ipDestination) ? $ipDestination : '';
+            $data['tcpPort'] = isset($tcpPort) ? $tcpPort : '';
+            $data['udpPort'] = isset($udpPort) ? $udpPort : '';
+            $data['firewallCode'] = isset($firewallCode) ? $firewallCode : '';
             $this->load->view('firewall/setup_rule_page', $data);
         }  
     }
@@ -114,6 +100,12 @@ class Firewall extends CI_Controller {
 			
 		}		
 	}
+
+    public function load_request($requestNumber, $firewallCode)
+    {
+        $result = $this->firewallrequest_model->inquiry_detail($requestNumber, urldecode($firewallCode));
+        $this->setup_rule($result->RequestID, $result->bidirectional, $result->ipSource, $result->ipDestination, strpos($result->protocol, 'TCP') === false ? null : $result->port, strpos($result->protocol, 'udp') === false ? null : $result->port, urldecode($firewallCode));
+    }
 
     public function save_file_address_object() {
         $response = array();
@@ -638,13 +630,13 @@ class Firewall extends CI_Controller {
 		echo json_encode($data);
 	}
 
-    public function list_firewall()
+    public function list_firewallcode()
     {
         $query = $this->input->get('q');
-        $arrFirewall = $this->firewall_model->find_all_entry($query);
+        $arrFirewall = $this->firewall_model->find_all_entry_by_fwcode($query);
         $data['arrFirewall'] = array();
         foreach($arrFirewall as $row) {
-            $data['arrFirewall'][] = $row->getIp()."|".$row->getPort()."|".$row->getNameVdom();
+            $data['arrFirewall'][] = $row->getCode()."|".$row->getIp()."|".$row->getPort();
         }
         return $this->output->set_content_type('application/json')->set_status_header(200)->set_output(json_encode($data['arrFirewall']));
     }
@@ -658,190 +650,196 @@ class Firewall extends CI_Controller {
         $postUdpPort = str_replace(" ", "", $this->input->post('udp_port'));
         $postFirewall = $this->input->post('firewall');
 
-        $firewallObj = $this->firewall_model->find_single_entry($postFirewall);
-        $mappingNotFound = false;
-        $mappingNotFoundDesc = "We found that : ";
+        $firewallObj = $this->firewall_model->find_single_entry_by_fwcode($postFirewall);
 
-        $parsedReqNumber = trim($postRequestNumber);
+        if($firewallObj instanceof FirewallObject) {
+            $mappingNotFound = false;
+            $mappingNotFoundDesc = "We found that : ";
 
-        $arrIpSource = array_map("trim", explode(",", $postIpSource));
-        $arrParsedIpSource = array();
-        $arrNotFoundIpSource = array();
-        foreach($arrIpSource as $row) {
-            $ipSrcFirewallObj = $this->firewalladdress_model->find_by_address($postFirewall, $row);
-            if($ipSrcFirewallObj instanceof FirewallAddressObject) {
-                $arrParsedIpSource[] = $ipSrcFirewallObj->getIpname();
-            } else {
-                $mappingNotFound = true;
-                $mappingNotFoundDesc .= " IP ".$row." doesn't exist\r\n".PHP_EOL;
-                if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\-(\d{1,3})$/', $row, $matches)) { // if IP range
-                    $selectedParsedIpSource = $row;
-                } else if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\/(\d{1,2})$/', $row, $matches)) { // if IP subnet
-                    $selectedParsedIpSource = str_replace("/", "_", $row);
-                } else if(preg_match_all("/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})$/", $row, $matches)) { // if IP single
-                    $selectedParsedIpSource = $row."_32";
-                }
-                $arrNotFoundIpSource[$row] = $selectedParsedIpSource;
-            }
-        }
-        $parsedIpSource = implode(" ", $arrParsedIpSource);
-        
-        $arrIpDestination = array_map("trim", explode(",", $postIpDestination));
-        $arrParsedIpDestination = array();
-        $arrNotFoundIpDestination = array();
-        foreach($arrIpDestination as $row) {
-            $ipDestFirewallObj = $this->firewalladdress_model->find_by_address($postFirewall, $row);
-            if($ipDestFirewallObj instanceof FirewallAddressObject) {
-                $arrParsedIpDestination[] = $ipDestFirewallObj->getIpname();
-            } else {
-                $mappingNotFound = true;
-                $mappingNotFoundDesc .= " IP ".$row." doesn't exist\r\n".PHP_EOL;
-                if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\-(\d{1,3})$/', $row, $matches)) { // if IP range
-                    $selectedParsedIpDestination = $row;
-                } else if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\/(\d{1,2})$/', $row, $matches)) { // if IP subnet
-                    $selectedParsedIpDestination = str_replace("/", "_", $row);
-                } else if(preg_match_all("/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})$/", $row, $matches)) { // if IP single
-                    $selectedParsedIpDestination = $row."_32";
-                }
-                $arrNotFoundIpDestination[$row] = $selectedParsedIpDestination;
-            }
-        }
-        $parsedIpDestination = implode(" ", $arrParsedIpDestination);
+            $parsedReqNumber = trim($postRequestNumber);
 
-        $arrTcpPort = array_map("trim", explode(",", $postTcpPort));
-        $arrParsedTcpPort = array();
-        $arrNotFoundTcpPort = array();
-        foreach($arrTcpPort as $row) {
-            $tcpPortFirewallObj = $this->firewallservice_model->find_by_portaddress($postFirewall, "TCP", $row);
-            if($tcpPortFirewallObj instanceof FirewallServiceObject) {
-                $arrParsedTcpPort[] = $tcpPortFirewallObj->getPortname();
-            } else {
-                $mappingNotFound = true;
-                $mappingNotFoundDesc .= " TCP Port ".$row." doesn't exist\r\n".PHP_EOL;
-                $selectedParsedTcpPort= $row."-tcp";
-                $arrNotFoundTcpPort[$row] = $selectedParsedTcpPort;
-            }
-        }
-        $parsedTcpPort = implode(" ", $arrParsedTcpPort);
-
-        $arrUdpPort = array_map("trim", explode(",", $postUdpPort));
-        $arrParsedUdpPort = array();
-        $arrNotFoundUdpPort = array();
-        foreach ($arrUdpPort as $row) {
-            $udpPortFirewallObj = $this->firewallservice_model->find_by_portaddress($postFirewall, "UDP", $row);
-            if($udpPortFirewallObj instanceof FirewallServiceObject) {
-                $arrParsedUdpPort[] = $udpPortFirewallObj->getPortname();
-            } else {
-                $mappingNotFound = true;
-                $mappingNotFoundDesc .= "UDP Port ".$row." doesn't exist\r\n".PHP_EOL;
-                $selectedParsedUdpPort= $row."-udp";
-                $arrNotFoundUdpPort[$row] = $selectedParsedUdpPort;
-            }
-        }
-        $parsedUdpPort = implode(" ", $arrParsedUdpPort);
-        
-        if(!$mappingNotFound) {
-            $setupCommandTemplate = $firewallObj->getSetupCommandTemplate();
-            $setupCommandTemplate = str_replace("{#REQNUM}", $parsedReqNumber, $setupCommandTemplate);
-            $setupCommandTemplate = str_replace("{#IPSRC}", $parsedIpSource, $setupCommandTemplate);
-            $setupCommandTemplate = str_replace("{#IPDEST}", $parsedIpDestination, $setupCommandTemplate);
-            $setupCommandTemplate = str_replace("{#PORTTCP}", $parsedTcpPort, $setupCommandTemplate);
-            $setupCommandTemplate = str_replace("{#PORTUDP}", $parsedUdpPort, $setupCommandTemplate);
-            $firewallObj->setSetupCommandTemplate($setupCommandTemplate);
-        } else {
-            $spesialCommandAddressTemplate = $firewallObj->getSpesialCommandAddressTemplate();
-            if(count(explode("~~", $spesialCommandAddressTemplate)) > 0) {
-                list($spesialCommandAddress1Template, $spesialCommandAddress2Template, $spesialCommandAddress3Template) = explode("~~", $spesialCommandAddressTemplate);
-            }
-
-            $spesialCommandPortTemplate = $firewallObj->getSpesialCommandPortTemplate();
-            if(count(explode("~~", $spesialCommandPortTemplate)) > 0) {
-                list($spesialCommandPortTcpTemplate, $spesialCommandPortUdpTemplate) = explode("~~", $spesialCommandPortTemplate);
-            }
-
-            $spesialCommandAddressTemplate = str_replace("{#IPNEW}", $postIpSource, $spesialCommandAddressTemplate);
-            $spesialCommandAddressTemplate = str_replace("{#IPNAME}", $postIpDestination, $spesialCommandAddressTemplate);
-            $spesialCommandAddressTemplate = str_replace("{#IPSTART}", $parsedIpSource, $spesialCommandAddressTemplate);
-            $spesialCommandAddressTemplate = str_replace("{#IPEND}", $parsedIpDestination, $spesialCommandAddressTemplate);
-
-            $commandAddress = '';
-
-            if(count($arrNotFoundIpSource) > 0) {
-                foreach($arrNotFoundIpSource as $key => $row) {
-                    if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\-(\d{1,3})$/', $key, $matches)) { // if IP range
-                        // echo "<pre>"; var_dump($spesialCommandAddress3Template); echo "</pre>"; die;
-                        $tmpCommandAddress = isset($spesialCommandAddress3Template) ? $spesialCommandAddress3Template : 'n/a';
-                        $tmpCommandAddress = str_replace("{#IPNAME}", $row, $tmpCommandAddress);
-                        $tmpCommandAddress = str_replace("{#IPSTART}", $matches[1][0].".".$matches[2][0], $tmpCommandAddress);
-                        $tmpCommandAddress = str_replace("{#IPEND}", $matches[1][0].".".$matches[3][0], $tmpCommandAddress);
-                        $commandAddress .= $tmpCommandAddress.PHP_EOL;
-                    } else if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\/(\d{1,2})$/', $key, $matches)) { // if IP subnet
-                        $tmpCommandAddress = isset($spesialCommandAddress2Template) ? $spesialCommandAddress2Template : 'n/a';
-                        $tmpCommandAddress = str_replace("{#IPNEW}", $key, $tmpCommandAddress);
-                        $tmpCommandAddress = str_replace("{#IPNAME}", $row, $tmpCommandAddress);
-                        $commandAddress .= $tmpCommandAddress.PHP_EOL;
-                    } else if(preg_match_all("/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})$/", $key, $matches)) { // if IP single
-                        $tmpCommandAddress = isset($spesialCommandAddress1Template) ? $spesialCommandAddress1Template : 'n/a';
-                        $tmpCommandAddress = str_replace("{#IPNEW}", $key."/32", $tmpCommandAddress);
-                        $tmpCommandAddress = str_replace("{#IPNAME}", $row."_32", $tmpCommandAddress);
-                        $commandAddress .= $tmpCommandAddress.PHP_EOL;
+            $arrIpSource = array_map("trim", explode(",", $postIpSource));
+            $arrParsedIpSource = array();
+            $arrNotFoundIpSource = array();
+            foreach($arrIpSource as $row) {
+                $ipSrcFirewallObj = $this->firewalladdress_model->find_by_address($firewallObj->getIp(), $row);
+                if($ipSrcFirewallObj instanceof FirewallAddressObject) {
+                    $arrParsedIpSource[] = $ipSrcFirewallObj->getIpname();
+                } else {
+                    $mappingNotFound = true;
+                    $mappingNotFoundDesc .= " IP ".$row." doesn't exist\r\n".PHP_EOL;
+                    if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\-(\d{1,3})$/', $row, $matches)) { // if IP range
+                        $selectedParsedIpSource = $row;
+                    } else if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\/(\d{1,2})$/', $row, $matches)) { // if IP subnet
+                        $selectedParsedIpSource = str_replace("/", "_", $row);
+                    } else if(preg_match_all("/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})$/", $row, $matches)) { // if IP single
+                        $selectedParsedIpSource = $row."_32";
+                    }
+                    if(isset($selectedParsedIpSource) && !empty($selectedParsedIpSource)) {
+                        $arrNotFoundIpSource[$row] = $selectedParsedIpSource;
                     }
                 }
             }
-
-            if(count($arrNotFoundIpDestination) > 0) {
-                foreach($arrNotFoundIpDestination as $key => $row) {
-                    if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\-(\d{1,3})$/', $key, $matches)) { // if IP range
-                        // echo "<pre>"; var_dump($spesialCommandAddress3Template); echo "</pre>"; die;
-                        $tmpCommandAddress = isset($spesialCommandAddress3Template) ? $spesialCommandAddress3Template : 'n/a';
-                        $tmpCommandAddress = str_replace("{#IPNAME}", $row, $tmpCommandAddress);
-                        $tmpCommandAddress = str_replace("{#IPSTART}", $matches[1][0].".".$matches[2][0], $tmpCommandAddress);
-                        $tmpCommandAddress = str_replace("{#IPEND}", $matches[1][0].".".$matches[3][0], $tmpCommandAddress);
-                        $commandAddress .= $tmpCommandAddress.PHP_EOL;
-                    } else if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\/(\d{1,2})$/', $key, $matches)) { // if IP subnet
-                        $tmpCommandAddress = isset($spesialCommandAddress2Template) ? $spesialCommandAddress2Template : 'n/a';
-                        $tmpCommandAddress = str_replace("{#IPNEW}", $key, $tmpCommandAddress);
-                        $tmpCommandAddress = str_replace("{#IPNAME}", $row, $tmpCommandAddress);
-                        $commandAddress .= $tmpCommandAddress.PHP_EOL;
-                    } else if(preg_match_all("/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})$/", $key, $matches)) { // if IP single
-                        $tmpCommandAddress = isset($spesialCommandAddress1Template) ? $spesialCommandAddress1Template : 'n/a';
-                        $tmpCommandAddress = str_replace("{#IPNEW}", $key."/32", $tmpCommandAddress);
-                        $tmpCommandAddress = str_replace("{#IPNAME}", $row."_32", $tmpCommandAddress);
-                        $commandAddress .= $tmpCommandAddress.PHP_EOL;
+            $parsedIpSource = implode(" ", $arrParsedIpSource);
+            
+            $arrIpDestination = array_map("trim", explode(",", $postIpDestination));
+            $arrParsedIpDestination = array();
+            $arrNotFoundIpDestination = array();
+            foreach($arrIpDestination as $row) {
+                $ipDestFirewallObj = $this->firewalladdress_model->find_by_address($firewallObj->getIp(), $row);
+                if($ipDestFirewallObj instanceof FirewallAddressObject) {
+                    $arrParsedIpDestination[] = $ipDestFirewallObj->getIpname();
+                } else {
+                    $mappingNotFound = true;
+                    $mappingNotFoundDesc .= " IP ".$row." doesn't exist\r\n".PHP_EOL;
+                    if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\-(\d{1,3})$/', $row, $matches)) { // if IP range
+                        $selectedParsedIpDestination = $row;
+                    } else if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\/(\d{1,2})$/', $row, $matches)) { // if IP subnet
+                        $selectedParsedIpDestination = str_replace("/", "_", $row);
+                    } else if(preg_match_all("/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})$/", $row, $matches)) { // if IP single
+                        $selectedParsedIpDestination = $row."_32";
+                    }
+                    if(isset($selectedParsedIpDestination) && !empty($selectedParsedIpDestination)) {
+                        $arrNotFoundIpDestination[$row] = $selectedParsedIpDestination;
                     }
                 }
             }
+            $parsedIpDestination = implode(" ", $arrParsedIpDestination);
 
-            $commandPort = '';
-
-            if(count($arrNotFoundTcpPort) > 0) {
-                foreach($arrNotFoundTcpPort as $key => $row) {
-                    $tmpCommandPort = isset($spesialCommandPortTcpTemplate) ? $spesialCommandPortTcpTemplate : 'n/a';
-                    $tmpCommandPort = str_replace("{#PORTNEW}", $key, $tmpCommandPort);
-                    $tmpCommandPort = str_replace("{#PORTNAME}", $row, $tmpCommandPort);
-                    $commandPort .= $tmpCommandPort.PHP_EOL;
+            $arrTcpPort = array_map("trim", explode(",", $postTcpPort));
+            $arrParsedTcpPort = array();
+            $arrNotFoundTcpPort = array();
+            foreach($arrTcpPort as $row) {
+                $tcpPortFirewallObj = $this->firewallservice_model->find_by_portaddress($firewallObj->getIp(), "TCP", $row);
+                if($tcpPortFirewallObj instanceof FirewallServiceObject) {
+                    $arrParsedTcpPort[] = $tcpPortFirewallObj->getPortname();
+                } else {
+                    $mappingNotFound = true;
+                    $mappingNotFoundDesc .= " TCP Port ".$row." doesn't exist\r\n".PHP_EOL;
+                    $selectedParsedTcpPort= $row."-tcp";
+                    $arrNotFoundTcpPort[$row] = $selectedParsedTcpPort;
                 }
             }
+            $parsedTcpPort = implode(" ", $arrParsedTcpPort);
 
-            if(count($arrNotFoundUdpPort) > 0) {
-                foreach($arrNotFoundUdpPort as $key => $row) {
-                    $tmpCommandPort = isset($spesialCommandPortUdpTemplate) ? $spesialCommandPortUdpTemplate : 'n/a';
-                    $tmpCommandPort = str_replace("{#PORTNEW}", $key, $tmpCommandPort);
-                    $tmpCommandPort = str_replace("{#PORTNAME}", $row, $tmpCommandPort);
-                    $commandPort .= $tmpCommandPort.PHP_EOL;
+            $arrUdpPort = array_map("trim", explode(",", $postUdpPort));
+            $arrParsedUdpPort = array();
+            $arrNotFoundUdpPort = array();
+            foreach ($arrUdpPort as $row) {
+                $udpPortFirewallObj = $this->firewallservice_model->find_by_portaddress($firewallObj->getIp(), "UDP", $row);
+                if($udpPortFirewallObj instanceof FirewallServiceObject) {
+                    $arrParsedUdpPort[] = $udpPortFirewallObj->getPortname();
+                } else if($row !== "") {
+                    $mappingNotFound = true;
+                    $mappingNotFoundDesc .= "UDP Port ".$row." doesn't exist\r\n".PHP_EOL;
+                    $selectedParsedUdpPort= $row."-udp";
+                    $arrNotFoundUdpPort[$row] = $selectedParsedUdpPort;
                 }
             }
+            $parsedUdpPort = implode(" ", $arrParsedUdpPort);
+            
+            if(!$mappingNotFound) {
+                $setupCommandTemplate = $firewallObj->getSetupCommandTemplate();
+                $setupCommandTemplate = str_replace("{#REQNUM}", $parsedReqNumber, $setupCommandTemplate);
+                $setupCommandTemplate = str_replace("{#IPSRC}", $parsedIpSource, $setupCommandTemplate);
+                $setupCommandTemplate = str_replace("{#IPDEST}", $parsedIpDestination, $setupCommandTemplate);
+                $setupCommandTemplate = str_replace("{#PORTTCP}", $parsedTcpPort, $setupCommandTemplate);
+                $setupCommandTemplate = str_replace("{#PORTUDP}", $parsedUdpPort, $setupCommandTemplate);
+                $firewallObj->setSetupCommandTemplate($setupCommandTemplate);
+            } else {
+                $spesialCommandAddressTemplate = $firewallObj->getSpesialCommandAddressTemplate();
+                if(count(explode("~~", $spesialCommandAddressTemplate)) > 0) {
+                    list($spesialCommandAddress1Template, $spesialCommandAddress2Template, $spesialCommandAddress3Template) = explode("~~", $spesialCommandAddressTemplate);
+                }
 
-            $firewallObj->setSpesialCommandAddressTemplate($commandAddress);
-            $firewallObj->setSpesialCommandPortTemplate($commandPort);
+                $spesialCommandPortTemplate = $firewallObj->getSpesialCommandPortTemplate();
+                if(count(explode("~~", $spesialCommandPortTemplate)) > 0) {
+                    list($spesialCommandPortTcpTemplate, $spesialCommandPortUdpTemplate) = explode("~~", $spesialCommandPortTemplate);
+                }
+
+                $spesialCommandAddressTemplate = str_replace("{#IPNEW}", $postIpSource, $spesialCommandAddressTemplate);
+                $spesialCommandAddressTemplate = str_replace("{#IPNAME}", $postIpDestination, $spesialCommandAddressTemplate);
+                $spesialCommandAddressTemplate = str_replace("{#IPSTART}", $parsedIpSource, $spesialCommandAddressTemplate);
+                $spesialCommandAddressTemplate = str_replace("{#IPEND}", $parsedIpDestination, $spesialCommandAddressTemplate);
+
+                $commandAddress = '';
+
+                if(count($arrNotFoundIpSource) > 0) {
+                    foreach($arrNotFoundIpSource as $key => $row) {
+                        if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\-(\d{1,3})$/', $key, $matches)) { // if IP range
+                            // echo "<pre>"; var_dump($spesialCommandAddress3Template); echo "</pre>"; die;
+                            $tmpCommandAddress = isset($spesialCommandAddress3Template) ? $spesialCommandAddress3Template : 'n/a';
+                            $tmpCommandAddress = str_replace("{#IPNAME}", $row, $tmpCommandAddress);
+                            $tmpCommandAddress = str_replace("{#IPSTART}", $matches[1][0].".".$matches[2][0], $tmpCommandAddress);
+                            $tmpCommandAddress = str_replace("{#IPEND}", $matches[1][0].".".$matches[3][0], $tmpCommandAddress);
+                            $commandAddress .= $tmpCommandAddress.PHP_EOL;
+                        } else if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\/(\d{1,2})$/', $key, $matches)) { // if IP subnet
+                            $tmpCommandAddress = isset($spesialCommandAddress2Template) ? $spesialCommandAddress2Template : 'n/a';
+                            $tmpCommandAddress = str_replace("{#IPNEW}", $key, $tmpCommandAddress);
+                            $tmpCommandAddress = str_replace("{#IPNAME}", $row, $tmpCommandAddress);
+                            $commandAddress .= $tmpCommandAddress.PHP_EOL;
+                        } else if(preg_match_all("/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})$/", $key, $matches)) { // if IP single
+                            $tmpCommandAddress = isset($spesialCommandAddress1Template) ? $spesialCommandAddress1Template : 'n/a';
+                            $tmpCommandAddress = str_replace("{#IPNEW}", $key."/32", $tmpCommandAddress);
+                            $tmpCommandAddress = str_replace("{#IPNAME}", $row."_32", $tmpCommandAddress);
+                            $commandAddress .= $tmpCommandAddress.PHP_EOL;
+                        }
+                    }
+                }
+
+                if(count($arrNotFoundIpDestination) > 0) {
+                    foreach($arrNotFoundIpDestination as $key => $row) {
+                        if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\-(\d{1,3})$/', $key, $matches)) { // if IP range
+                            // echo "<pre>"; var_dump($spesialCommandAddress3Template); echo "</pre>"; die;
+                            $tmpCommandAddress = isset($spesialCommandAddress3Template) ? $spesialCommandAddress3Template : 'n/a';
+                            $tmpCommandAddress = str_replace("{#IPNAME}", $row, $tmpCommandAddress);
+                            $tmpCommandAddress = str_replace("{#IPSTART}", $matches[1][0].".".$matches[2][0], $tmpCommandAddress);
+                            $tmpCommandAddress = str_replace("{#IPEND}", $matches[1][0].".".$matches[3][0], $tmpCommandAddress);
+                            $commandAddress .= $tmpCommandAddress.PHP_EOL;
+                        } else if(preg_match_all('/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})\/(\d{1,2})$/', $key, $matches)) { // if IP subnet
+                            $tmpCommandAddress = isset($spesialCommandAddress2Template) ? $spesialCommandAddress2Template : 'n/a';
+                            $tmpCommandAddress = str_replace("{#IPNEW}", $key, $tmpCommandAddress);
+                            $tmpCommandAddress = str_replace("{#IPNAME}", $row, $tmpCommandAddress);
+                            $commandAddress .= $tmpCommandAddress.PHP_EOL;
+                        } else if(preg_match_all("/^(\d{1,3}\.\d{1,3}\.\d{1,3})\.(\d{1,3})$/", $key, $matches)) { // if IP single
+                            $tmpCommandAddress = isset($spesialCommandAddress1Template) ? $spesialCommandAddress1Template : 'n/a';
+                            $tmpCommandAddress = str_replace("{#IPNEW}", $key."/32", $tmpCommandAddress);
+                            $tmpCommandAddress = str_replace("{#IPNAME}", $row."_32", $tmpCommandAddress);
+                            $commandAddress .= $tmpCommandAddress.PHP_EOL;
+                        }
+                    }
+                }
+
+                $commandPort = '';
+                if(count($arrNotFoundTcpPort) > 0) {
+                    foreach($arrNotFoundTcpPort as $key => $row) {
+                        $tmpCommandPort = isset($spesialCommandPortTcpTemplate) ? $spesialCommandPortTcpTemplate : 'n/a';
+                        $tmpCommandPort = str_replace("{#PORTNEW}", $key, $tmpCommandPort);
+                        $tmpCommandPort = str_replace("{#PORTNAME}", $row, $tmpCommandPort);
+                        $commandPort .= $tmpCommandPort.PHP_EOL;
+                    }
+                }
+                if(count($arrNotFoundUdpPort) > 0) {
+                    foreach($arrNotFoundUdpPort as $key => $row) {
+                        $tmpCommandPort = isset($spesialCommandPortUdpTemplate) ? $spesialCommandPortUdpTemplate : 'n/a';
+                        $tmpCommandPort = str_replace("{#PORTNEW}", $key, $tmpCommandPort);
+                        $tmpCommandPort = str_replace("{#PORTNAME}", $row, $tmpCommandPort);
+                        $commandPort .= $tmpCommandPort.PHP_EOL;
+                    }
+                }
+
+                $firewallObj->setSpesialCommandAddressTemplate($commandAddress);
+                $firewallObj->setSpesialCommandPortTemplate($commandPort);
+            }
+
+            $data['mappingNotFound'] = $mappingNotFound;
+            $data['mappingNotFoundDesc'] = $mappingNotFoundDesc;
+            $data['arrNotFoundIpSource'] = $arrNotFoundIpSource;
+            $data['arrNotFoundIpDestination'] = $arrNotFoundIpDestination;
+            $data['arrNotFoundTcpPort'] = $arrNotFoundTcpPort;
+            $data['arrNotFoundUdpPort'] = $arrNotFoundUdpPort;
         }
-        
-        $data['mappingNotFound'] = $mappingNotFound;
-        $data['mappingNotFoundDesc'] = $mappingNotFoundDesc;
-        $data['arrNotFoundIpSource'] = $arrNotFoundIpSource;
-        $data['arrNotFoundIpDestination'] = $arrNotFoundIpDestination;
-        $data['arrNotFoundTcpPort'] = $arrNotFoundTcpPort;
-        $data['arrNotFoundUdpPort'] = $arrNotFoundUdpPort;
+
         $data['firewall'] = $firewallObj;
         $this->load->view('firewall/generate_command_template', $data);
     }
@@ -991,7 +989,7 @@ class Firewall extends CI_Controller {
                 echo "Connection failed"; die;
             }
         }
-        
+
         $data = array();
         $this->load->view('firewall/execute_command_template', $data);
     }
@@ -1043,8 +1041,6 @@ class Firewall extends CI_Controller {
 
     public function insert_log($policy_id, $src, $dest, $service, $action, $hit, $hist_action, $time_execute, $user)
     {
-        // var_dump($policy_id)."|".var_dump($src)."|".var_dump($dest)."|".var_dump($service)."|".var_dump($action)."|".var_dump($hit)."|".var_dump($hist_action)."|".var_dump($time_execute); die;
-        // policy_id, action disable/delete, time_execute
         $filename = str_replace(".", "", $this->session->userdata("firewall_ip"));
         $filelog = APPPATH.'../logs/'.$filename.'.txt';
         if(!file_exists($filelog)) {

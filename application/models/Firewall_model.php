@@ -18,12 +18,41 @@ class Firewall_model extends CI_Model {
 		return $data;
 	}
 
+	public function find_all_entry_by_fwcode($code = '') {
+		$this->db->select('ip, code, port, is_vdom, vdom, setup_command, spesial_address_command, spesial_port_command');
+		if(!empty($code)) {
+			$this->db->like('code', $code);
+		}
+		$resultSet = $this->db->get('firewall');
+		$data = array();
+		foreach ($resultSet->result() as $row) {
+			$firewallObj = new FirewallObject($row->ip, $row->code, $row->port, $row->is_vdom, $row->vdom, $row->setup_command, $row->spesial_address_command, $row->spesial_port_command);
+			$data[] = $firewallObj;
+		}
+
+		return $data;
+	}
+
 	public function find_single_entry($ip) {
 		$this->db->select('ip, code, port, is_vdom, vdom, setup_command, spesial_address_command, spesial_port_command');
 		$this->db->where('ip', $ip);
 		$resultSet = $this->db->get('firewall');
 
-		$data = array();
+		$data = new StdClass();
+		if($resultSet->num_rows() > 0) {
+			$row = $resultSet->row();
+			$data = new FirewallObject($row->ip, $row->code, $row->port, $row->is_vdom, $row->vdom, $row->setup_command, $row->spesial_address_command, $row->spesial_port_command);
+		}
+		
+		return $data;
+	}
+
+	public function find_single_entry_by_fwcode($code) {
+		$this->db->select('ip, code, port, is_vdom, vdom, setup_command, spesial_address_command, spesial_port_command');
+		$this->db->where('code', $code);
+		$resultSet = $this->db->get('firewall');
+
+		$data = new StdClass();
 		if($resultSet->num_rows() > 0) {
 			$row = $resultSet->row();
 			$data = new FirewallObject($row->ip, $row->code, $row->port, $row->is_vdom, $row->vdom, $row->setup_command, $row->spesial_address_command, $row->spesial_port_command);

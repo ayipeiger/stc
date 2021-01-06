@@ -30,7 +30,7 @@
         margin-left: 20px;
     }
     .menu-area {
-        max-width: 500px;
+        max-width: 750px;
         margin: 0 auto;
         padding: 100px 0;
     }
@@ -96,7 +96,15 @@
 </div>
 <div class="menu-area">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
+            <a href="<?=site_url('Firewall/setup_request')?>">
+                <div class="menu-item">
+                    <div class="menu-icon"><span class="glyphicon glyphicon-th-list" aria-hidden="true" style="font-size: 4.5em"></span></div>
+                    <div class="menu-title">Setup Request</div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
             <a href="<?=site_url('Firewall/setup_rule')?>">
                 <div class="menu-item">
                     <div class="menu-icon"><span class="glyphicon glyphicon-check" aria-hidden="true" style="font-size: 4.5em"></span></div>
@@ -104,7 +112,7 @@
                 </div>
             </a>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <a href="<?=site_url('Firewall/cleanup_rule')?>">
                 <div class="menu-item">
                     <div class="menu-icon"><span class="glyphicon glyphicon-trash" aria-hidden="true" style="font-size: 4.5em"></span></div>

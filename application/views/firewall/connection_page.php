@@ -170,23 +170,6 @@
         <form method="post" accept-charset="utf-8" action="<?=site_url('Firewall/connection')?>">
     		<div class="avatar"><span class="glyphicon glyphicon-fire" aria-hidden="true" style="font-size: 4.5em"></span></div>
         	<h4 class="modal-title">Connect to Your Firewall</h4>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <input type="text" id="firewall" name="firewall" class="form-control" placeholder="Firewall" required="required" autocomplete="off">
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-xs-6">
-                        <input type="text" id="port" name="port" class="form-control" placeholder="Port" required="required">
-                    </div>
-                    <div class="col-xs-6">
-                        <input type="text" id="vdom" name="vdom" class="form-control" placeholder="Vdom">
-                    </div>
-                </div>
-            </div>
             <div class="form-group input-group">
                 <span class="glyphicon glyphicon-user input-group-addon" id="addon-username"></span>
                 <input type="text" name="username" class="form-control" placeholder="Username" aria-describedby="addon-username">
