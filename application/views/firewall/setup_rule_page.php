@@ -304,6 +304,15 @@
             
             return false;
         });
+
+        $('#btn-switch').click(function(){
+            var contentSrc = $('#ip_source').val();
+            var contentDest = $('#ip_destination').val();
+            $('#ip_source').val(contentDest);
+            $('#ip_destination').val(contentSrc);
+            $(this).remove();
+        });
+
     });
 
 </script>
@@ -381,7 +390,16 @@
                                 </div>
                             </div>
                         </div>
+                        <?php if(isset($bidirectional) && !empty($bidirectional)): ?>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <button id="btn-switch" type="button" class="btn btn-warning btn-block btn-md"><span class=" glyphicon glyphicon-refresh" aria-hidden="true"></span> Switch</button>
+                                </div>
+                            </div>
+                        </div>
                         <button type="submit" name="submit" class="btn btn-primary btn-block btn-lg" value="generate">Generate</button>
+                        <?php endif; ?>
                     </form> 
                 </div>
                 <div class="col-sm-6">
