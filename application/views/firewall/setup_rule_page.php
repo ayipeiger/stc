@@ -398,8 +398,8 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="submit" name="submit" class="btn btn-primary btn-block btn-lg" value="generate">Generate</button>
                         <?php endif; ?>
+                        <button type="submit" name="submit" class="btn btn-primary btn-block btn-lg" value="generate">Generate</button>
                     </form> 
                 </div>
                 <div class="col-sm-6">
