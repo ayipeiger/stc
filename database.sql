@@ -27,9 +27,9 @@ CREATE TABLE `firewall` (
   `port` int(10) NOT NULL,
   `is_vdom` tinyint(1) NOT NULL,
   `vdom` varchar(50) COLLATE latin1_general_ci NOT NULL,
-  `setup_command` tinytext COLLATE latin1_general_ci NOT NULL,
-  `spesial_address_command` tinytext COLLATE latin1_general_ci NOT NULL,
-  `spesial_port_command` tinytext COLLATE latin1_general_ci NOT NULL,
+  `setup_command` longtext COLLATE latin1_general_ci NOT NULL,
+  `spesial_address_command` longtext COLLATE latin1_general_ci NOT NULL,
+  `spesial_port_command` longtext COLLATE latin1_general_ci NOT NULL,
   PRIMARY KEY (`ip`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 

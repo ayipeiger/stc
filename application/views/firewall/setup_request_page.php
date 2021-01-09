@@ -303,6 +303,7 @@
 						<tr>
 							<th align="center">Request Number</th>
                             <th align="center">Bi-Directional</th>
+                            <th align="center">Comment</th>
                             <th align="center">Detail</th>
 							<th align="center">Action Command</th>
 						</tr>
@@ -313,12 +314,15 @@
 								<tr>
 									<td align="center"><?=$request->RequestID?></td>
                                     <td align="center"><?=$request->bidirectional?></td>
+                                    <td align="align"><?=str_replace(",", "<br>", $request->comment)?></td>
                                     <td align="center">This request contains approximately <?=$request->total_data?> data</td>
                                     <td align="center">
                                         <?php //$arrFw = explode(",", $request->)?>
                                         <div class="btn-group">
                                             <?php $arrFw = explode(",", $request->fw); ?>
-                                            <?php if(trim($request->fw) !== "" && count($arrFw) > 0): ?>
+                                            <?php if($request->executed == 1): ?>
+                                                already execute
+                                            <?php elseif(trim($request->fw) !== "" && count($arrFw) > 0): ?>
                                             <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Choose FW <span class="caret"></span>
                                             </button>
                                             <ul class="dropdown-menu">
@@ -327,7 +331,7 @@
                                                 <?php endforeach; ?>
                                             </ul>
                                             <?php else: ?>
-                                            none fw
+                                                none fw
                                             <?php endif; ?>
                                         </div>
                                     </td>
@@ -339,6 +343,7 @@
 						<tr>
                             <th align="center">Request Number</th>
                             <th align="center">Bi-Directional</th>
+                            <th align="center">Comment</th>
                             <th align="center">Detail</th>
                             <th align="center">Action Command</th>
                         </tr>

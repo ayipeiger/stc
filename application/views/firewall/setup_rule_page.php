@@ -257,6 +257,10 @@
             }
         });
 
+        $('#firewall').dblclick(function(){
+            $(this).removeAttr('readonly');
+        });
+
         $('.content').off('submit', '#form-generate');
         $('.content').on('submit', '#form-generate', function(){
 
@@ -386,7 +390,8 @@
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-xs-12">
-                                    <input type="text" id="firewall" name="firewall" class="form-control" placeholder="Firewall" required="required" value="<?=$firewallCode?>" autocomplete="off">
+                                    <input type="text" id="firewall" name="firewall" class="form-control" placeholder="Firewall" required="required" value="<?=$firewallCode?>" <?php if(isset($firewallCode) && !empty($firewallCode)):?>readonly
+                                    <?php endif; ?> autocomplete="off">
                                 </div>
                             </div>
                         </div>
