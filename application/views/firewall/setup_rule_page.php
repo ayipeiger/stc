@@ -120,6 +120,11 @@
       animation-delay: .4s;
     }
 
+    .toggle-log {
+        cursor: pointer;
+        color: #337ab7
+    }
+
     @keyframes spin {
       0% {
         transform: rotate(0deg);
@@ -221,6 +226,8 @@
         transform: rotate(-360deg);
       }
     }
+
+
 </style>
 <script type="text/javascript">
     
@@ -307,6 +314,17 @@
             }
             
             return false;
+        });
+
+        $('.content').off('click', '#toggle-log');
+        $('.content').on('click', '#toggle-log', function(){
+            if($(this).html().search('Show') != -1) {
+                $(this).html('Hide Log &gt;&gt;');
+                $('#div-log').show();
+            } else if($(this).html().search('Hide') != -1) {
+                $(this).html('Show Log &gt;&gt;');
+                $('#div-log').hide();
+            }
         });
 
         $('#btn-switch').click(function(){

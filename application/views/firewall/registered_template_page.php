@@ -252,6 +252,9 @@
                 <span class="header-title"><?=$this->config->item('app_name')?></span>
             </div>
             <div class="col-lg-4 col-md-4 text-right">
+                <a href="<?=site_url('Firewall/connection')?>" id="btn-show-registered-fw" class="btn-stc btn btn-info btn-sm">
+                    <span class="glyphicon glyphicon-home" aria-hidden="true"></span> Home
+                </a>
                 <a href="<?=site_url('Firewall/registered')?>" id="btn-show-registered-fw" class="btn-stc btn btn-info btn-sm">
                     <span class="glyphicon glyphicon-fire" aria-hidden="true"></span> Show Registered
                 </a>

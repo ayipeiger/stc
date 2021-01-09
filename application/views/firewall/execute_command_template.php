@@ -33,10 +33,10 @@
     <span class="sr-only">Error:</span> The service Port has been failure added into the firewall.
 </div>
 <?php endif; ?>
-<div id="div-log">
-    <pre>
-        <code class="language-html" data-lang="html"><?=isset($resultLogSetupCommand) && !empty($resultLogSetupCommand) ? nl2br($resultLogSetupCommand) : '';?><?=isset($resultLogAddressCommand) && !empty($resultLogAddressCommand) ? nl2br($resultLogAddressCommand) : '';?><?=isset($resultLogPortCommand) && !empty($resultLogPortCommand) ? nl2br($resultLogPortCommand) : '';?></code>
-    </pre>
+<span id="toggle-log" class="toggle-log">Show Log &gt;&gt;</span>
+<div id="div-log" style="display: none;">
+    <pre><code class="language-html" data-lang="html"><?=isset($resultLogSetupCommand) && !empty($resultLogSetupCommand) ? nl2br($resultLogSetupCommand) : '';?><?=isset($resultLogAddressCommand) && !empty($resultLogAddressCommand) ? nl2br($resultLogAddressCommand) : '';?><?=isset($resultLogPortCommand) && !empty($resultLogPortCommand) ? nl2br($resultLogPortCommand) : '';?></code></pre>
 </div>
+
 
 

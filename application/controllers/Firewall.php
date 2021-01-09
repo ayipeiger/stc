@@ -29,7 +29,7 @@ class Firewall extends CI_Controller {
             }
 		} else {
             if($this->session->userdata("is_connected")) {
-                redirect('Firewall/cleanup_rule');
+                redirect('Firewall/sub_menu');
             }
         }
 		$this->load->view('firewall/connection_page', $data);
@@ -852,8 +852,8 @@ class Firewall extends CI_Controller {
         $firewallObj = $this->firewall_model->find_single_entry($postFirewall);
 
         if($postSetupCommand) {
-            $resultSetupCommand = true;
-            $resultLogSetupCommand = "1".PHP_EOL."2".PHP_EOL;
+            $resultSetupCommand = false;
+            $resultLogSetupCommand = "";
             $arrCommand = array_filter(preg_split('/[\r\n]+/', $postSetupCommand));
             
             $strCommand = implode(" ".PHP_EOL." ", $arrCommand);
@@ -873,7 +873,9 @@ class Firewall extends CI_Controller {
                     $resultIOSetupCommand = stream_get_contents($sio_stream);
                     $resultErrSetupCommand = stream_get_contents($err_stream);
 
+                    $resultLogSetupCommand .= "============ Error Stream ============".PHP_EOL;
                     $resultLogSetupCommand .= $resultErrSetupCommand;
+                    $resultLogSetupCommand .= "============ IO Stream ============".PHP_EOL;
                     $resultLogSetupCommand .= $resultIOSetupCommand;
 
                     if(!empty($resultLogSetupCommand) && strpos($resultLogSetupCommand, "fail") === false) {
@@ -894,8 +896,8 @@ class Firewall extends CI_Controller {
         }
 
         if($postAddressCommand) {
-            $resultAddressCommand = true;
-            $resultLogAddressCommand = "Dilihat dari Lognya ini semua berhasil".PHP_EOL."Jadi sebaiknya jalan".PHP_EOL;
+            $resultAddressCommand = false;
+            $resultLogAddressCommand = "";
 
             $arrCommand = array_filter(preg_split('/[\r\n]+/', $postAddressCommand));
             
@@ -916,8 +918,11 @@ class Firewall extends CI_Controller {
                     $resultIOAddressCommand = stream_get_contents($sio_stream);
                     $resultErrAddressCommand = stream_get_contents($err_stream);
 
+                    $resultLogAddressCommand .= "============ Error Stream ============".PHP_EOL;
                     $resultLogAddressCommand .= $resultErrAddressCommand;
+                    $resultLogAddressCommand .= "============ IO Stream ============".PHP_EOL;
                     $resultLogAddressCommand .= $resultIOAddressCommand;
+
 
                     if(!empty($resultLogAddressCommand) && strpos($resultLogAddressCommand, "fail") === false) {
                         $resultAddressCommand = true;
@@ -953,8 +958,8 @@ class Firewall extends CI_Controller {
         }
 
         if($postPortCommand) {
-            $resultPortCommand = true;
-            $resultLogPortCommand = "Dilihat dari Lognya ini semua berhasil".PHP_EOL."Jadi sebaiknya jalan".PHP_EOL;
+            $resultPortCommand = false;
+            $resultLogPortCommand = "";
 
             $arrCommand = array_filter(preg_split('/[\r\n]+/', $postPortCommand));
             
@@ -975,7 +980,9 @@ class Firewall extends CI_Controller {
                     $resultIOPortCommand = stream_get_contents($sio_stream);
                     $resultErrPortCommand = stream_get_contents($err_stream);
 
+                    $resultLogPortCommand .= "============ Error Stream ============".PHP_EOL;
                     $resultLogPortCommand .= $resultIOPortCommand;
+                    $resultLogPortCommand .= "============ IO Stream ============".PHP_EOL;
                     $resultLogPortCommand .- $resultErrPortCommand;
 
                     if(!empty($resultLogPortCommand) && strpos($resultLogPortCommand, "fail") === false) {

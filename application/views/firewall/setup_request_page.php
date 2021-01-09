@@ -314,8 +314,8 @@
 								<tr>
 									<td align="center"><?=$request->RequestID?></td>
                                     <td align="center"><?=$request->bidirectional?></td>
-                                    <td align="align"><?=str_replace(",", "<br>", $request->comment)?></td>
-                                    <td align="center">This request contains approximately <?=$request->total_data?> data</td>
+                                    <td align="align"><?=nl2br(str_replace(",", "<br>", $request->comment))?></td>
+                                    <td align="center">This request contains <?=$request->total_data?> data</td>
                                     <td align="center">
                                         <?php //$arrFw = explode(",", $request->)?>
                                         <div class="btn-group">
