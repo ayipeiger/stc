@@ -11,7 +11,7 @@
  Target Server Version : 50557
  File Encoding         : 65001
 
- Date: 09/01/2021 20:14:56
+ Date: 16/01/2021 14:21:21
 */
 
 SET NAMES utf8mb4;
@@ -22,23 +22,26 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 DROP TABLE IF EXISTS `firewall`;
 CREATE TABLE `firewall` (
-  `ip` varchar(50) COLLATE latin1_general_ci NOT NULL,
   `code` varchar(100) COLLATE latin1_general_ci NOT NULL DEFAULT '',
+  `ip` varchar(50) COLLATE latin1_general_ci NOT NULL,
   `port` int(10) NOT NULL,
   `is_vdom` tinyint(1) NOT NULL,
   `vdom` varchar(50) COLLATE latin1_general_ci NOT NULL,
   `setup_command` longtext COLLATE latin1_general_ci NOT NULL,
   `spesial_address_command` longtext COLLATE latin1_general_ci NOT NULL,
   `spesial_port_command` longtext COLLATE latin1_general_ci NOT NULL,
-  PRIMARY KEY (`ip`)
+  PRIMARY KEY (`code`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 -- ----------------------------
 -- Records of firewall
 -- ----------------------------
 BEGIN;
-INSERT INTO `firewall` VALUES ('10.35.65.50', 'FWRY95', 22, 1, 'WAN', 'set command {#REQNUM}\r\n\r\nset source IP {#IPSRC}\r\nset destination IP {#IPDEST}\r\nset service {#PORTTCP} {#PORTUDP}', 'config firewall address\r\nedit {#IPNAME}\r\nset subnet {#IPNEW}\r\nnext~~config firewall address\r\nedit {#IPNAME}\r\nset subnet {#IPNEW}\r\nnext~~config firewall address\r\nedit {#IPNAME}\r\nset type iprange\r\nset start-ip {#IPSTART}\r\nset end-ip {#IPEND}\r\nnext', 'edit {#PORTNAME}\r\nset tcp-portrange {#PORTNEW}\r\nnext~~edit {#PORTNAME}\r\nset udp-portrange {#PORTNEW}\r\nnext');
-INSERT INTO `firewall` VALUES ('10.35.65.95', 'FWRY02 (VDOM-FWRY13)', 22, 1, 'WAN', 'set command {#REQNUM}\r\nset source IP {#IPSRC}\r\nset destination IP {#IPDEST}\r\nset service {#PORTTCP} {#PORTUDP}', 'config firewall address\r\nedit {#IPNAME}\r\nset subnet {#IPNEW}\r\nnext~~config firewall address\r\nedit {#IPNAME}\r\nset subnet {#IPNEW}\r\nnext~~config firewall address\r\nedit {#IPNAME}\r\nset type iprange\r\nset start-ip {#IPSTART}\r\nset end-ip {#IPEND}\r\nnext', 'edit {#PORTNAME}\r\nset tcp-portrange {#PORTNEW}\r\nnext~~edit {#PORTNAME}\r\nset udp-portrange {#PORTNEW}\r\nnext');
+INSERT INTO `firewall` VALUES ('FWRY02 (VDOM-FWRY13)', '10.35.65.95', 22, 1, 'WAN', 'set command {#REQNUM}\r\nset source IP {#IPSRC}\r\nset destination IP {#IPDEST}\r\nset service {#PORTTCP} {#PORTUDP}', 'config firewall address\r\nedit {#IPNAME}\r\nset subnet {#IPNEW}\r\nnext~~config firewall address\r\nedit {#IPNAME}\r\nset subnet {#IPNEW}\r\nnext~~config firewall address\r\nedit {#IPNAME}\r\nset type iprange\r\nset start-ip {#IPSTART}\r\nset end-ip {#IPEND}\r\nnext', 'edit {#PORTNAME}\r\nset tcp-portrange {#PORTNEW}\r\nnext~~edit {#PORTNAME}\r\nset udp-portrange {#PORTNEW}\r\nnext');
+INSERT INTO `firewall` VALUES ('FWRY95', '10.35.65.50', 22, 1, 'WAN', 'set command {#REQNUM}\r\n\r\nset source IP {#IPSRC}\r\nset destination IP {#IPDEST}\r\nset service {#PORTTCP} {#PORTUDP}', 'config firewall address\r\nedit {#IPNAME}\r\nset subnet {#IPNEW}\r\nnext~~config firewall address\r\nedit {#IPNAME}\r\nset subnet {#IPNEW}\r\nnext~~config firewall address\r\nedit {#IPNAME}\r\nset type iprange\r\nset start-ip {#IPSTART}\r\nset end-ip {#IPEND}\r\nnext', 'edit {#PORTNAME}\r\nset tcp-portrange {#PORTNEW}\r\nnext~~edit {#PORTNAME}\r\nset udp-portrange {#PORTNEW}\r\nnext');
+INSERT INTO `firewall` VALUES ('FWRY96', '10.35.65.96', 22, 1, 'MAN', 'set command {#REQNUM}\r\n\r\nset source IP {#IPSRC}\r\nset destination IP {#IPDEST}\r\nset service {#PORTTCP} {#PORTUDP}', 'config firewall address\r\nedit {#IPNAME}\r\nset subnet {#IPNEW}\r\nnext~~config firewall address\r\nedit {#IPNAME}\r\nset subnet {#IPNEW}\r\nnext~~config firewall address\r\nedit {#IPNAME}\r\nset type iprange\r\nset start-ip {#IPSTART}\r\nset end-ip {#IPEND}\r\nnext', 'edit {#PORTNAME}\r\nset tcp-portrange {#PORTNEW}\r\nnext~~edit {#PORTNAME}\r\nset udp-portrange {#PORTNEW}\r\nnext');
+INSERT INTO `firewall` VALUES ('FWRY97', '10.35.65.97', 22, 1, 'YAN', 'set command {#REQNUM}\r\n\r\nset source IP {#IPSRC}\r\nset destination IP {#IPDEST}\r\nset service {#PORTTCP} {#PORTUDP}', 'config firewall address\r\nedit {#IPNAME}\r\nset subnet {#IPNEW}\r\nnext~~config firewall address\r\nedit {#IPNAME}\r\nset subnet {#IPNEW}\r\nnext~~config firewall address\r\nedit {#IPNAME}\r\nset type iprange\r\nset start-ip {#IPSTART}\r\nset end-ip {#IPEND}\r\nnext', 'edit {#PORTNAME}\r\nset tcp-portrange {#PORTNEW}\r\nnext~~edit {#PORTNAME}\r\nset udp-portrange {#PORTNEW}\r\nnext');
+INSERT INTO `firewall` VALUES ('FWRY98', '10.35.65.98', 22, 1, 'GAN', 'set command {#REQNUM}\r\n\r\nset source IP {#IPSRC}\r\nset destination IP {#IPDEST}\r\nset service {#PORTTCP} {#PORTUDP}', 'config firewall address\r\nedit {#IPNAME}\r\nset subnet {#IPNEW}\r\nnext~~config firewall address\r\nedit {#IPNAME}\r\nset subnet {#IPNEW}\r\nnext~~config firewall address\r\nedit {#IPNAME}\r\nset type iprange\r\nset start-ip {#IPSTART}\r\nset end-ip {#IPEND}\r\nnext', 'edit {#PORTNAME}\r\nset tcp-portrange {#PORTNEW}\r\nnext~~edit {#PORTNAME}\r\nset udp-portrange {#PORTNEW}\r\nnext');
 COMMIT;
 
 -- ----------------------------
@@ -46,77 +49,77 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `firewall_object_addresses`;
 CREATE TABLE `firewall_object_addresses` (
-  `ip` varchar(50) COLLATE latin1_general_ci NOT NULL,
+  `code` varchar(100) COLLATE latin1_general_ci NOT NULL DEFAULT '',
   `ipname` varchar(50) COLLATE latin1_general_ci NOT NULL,
   `type` varchar(50) COLLATE latin1_general_ci NOT NULL,
   `address` varchar(50) COLLATE latin1_general_ci NOT NULL,
-  KEY `select_idx` (`ip`,`address`) USING BTREE
+  KEY `select_idx` (`code`,`address`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 -- ----------------------------
 -- Records of firewall_object_addresses
 -- ----------------------------
 BEGIN;
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '1.1.1.1_32', 'IP Netmask', '1.1.1.1');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.0.0.0_8', 'IP Netmask', '10.0.0.0/8');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.1.0.0_16', 'IP Netmask', '10.1.0.0/16');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.1.0.0_24', 'IP Netmask', '10.1.0.0/24');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.1.0.11', 'IP Netmask', '10.1.0.11');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.1.0.27', 'IP Netmask', '10.1.0.27');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.1.0.41-44', 'IP Range', '10.1.0.41-44');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.1.0.52-53', 'IP Range', '10.1.0.52-53');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.1.10.39', 'IP Netmask', '10.1.10.39');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.100.0.0_16', 'IP Netmask', '10.100.0.0/16');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.100.1.43', 'IP Netmask', '10.100.1.43/32');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.100.10.0_24', 'IP Netmask', '10.100.10.0/24');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.100.10.202', 'IP Netmask', '10.100.10.202');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.100.10.204', 'IP Netmask', '10.100.10.204');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.100.10.205', 'IP Netmask', '10.100.10.205');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.100.10.237-240', 'IP Range', '10.100.10.237-240');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.100.10.243', 'IP Netmask', '10.100.10.243');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.100.11.0-24', 'IP Netmask', '10.100.11.0/24');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.100.11.16', 'IP Netmask', '10.100.11.16');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.100.13.15-32', 'IP Netmask', '10.100.13.15/32');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.100.14.0_25', 'IP Netmask', '10.100.14.0/25');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.100.14.9', 'IP Netmask', '10.100.14.9/32');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.100.15.0-24', 'IP Netmask', '10.100.15.0/24');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.100.23.1', 'IP Netmask', '10.100.23.1/32');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.100.23.4', 'IP Netmask', '10.100.23.4/32');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.101.0.0_16', 'IP Netmask', '10.101.0.0/16');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.0.0_16', 'IP Netmask', '10.102.0.0/16');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.1.0', 'IP Netmask', '10.102.1.0/24');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.1.1-254', 'IP Range', '10.102.1.1-254');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.1.102', 'IP Netmask', '10.102.1.102/32');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.1.108', 'IP Netmask', '10.102.1.108/32');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.1.113-117', 'IP Range', '10.102.1.113-117');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.1.121', 'IP Netmask', '10.102.1.121/32');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.1.125', 'IP Netmask', '10.102.1.125/32');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.1.200', 'IP Netmask', '10.102.1.200');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.1.209', 'IP Netmask', '10.102.1.209');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.1.45-220', 'IP Range', '10.102.1.45-220');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.14.0_24', 'IP Netmask', '10.102.14.0/24');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.14.70-71', 'IP Range', '10.102.14.70-71');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.20.0_24', 'IP Netmask', '10.102.20.0/24');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.20.11', 'IP Netmask', '10.102.20.11');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.21.0_24', 'IP Netmask', '10.102.21.0/24');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.22.0_24', 'IP Netmask', '10.102.22.0/24');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.23.0_24', 'IP Netmask', '10.102.23.0/24');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.3.0_24', 'IP Netmask', '10.102.3.0/24');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.3.10-150', 'IP Range', '10.102.3.10-150');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.3.121', 'IP Netmask', '10.102.3.121');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.3.18', 'IP Netmask', '10.102.3.18');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.3.233', 'IP Netmask', '10.102.3.233');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.102.3.235', 'IP Netmask', '10.102.3.235');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.21.60.172_32', 'IP Netmask', '10.21.60.172');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.50', '10.21.36.67_32', 'IP Netmask', '10.21.36.67');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.95', '172.20.169.133_32', 'IP Netmask', '172.20.169.133');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.95', '172.20.169.130_32', 'IP Netmask', '172.20.169.130');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.95', '172.20.169.131_32', 'IP Netmask', '172.20.169.131');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.95', '172.20.169.132_32', 'IP Netmask', '172.20.169.132');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.95', '172.20.150.134_32', 'IP Netmask', '172.20.150.134');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.95', '172.20.150.0_24', 'IP Netmask', '172.20.150.0/24');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.95', '10.21.60.172_32', 'IP Netmask', '10.21.60.172');
-INSERT INTO `firewall_object_addresses` VALUES ('10.35.65.95', '10.21.36.67_32', 'IP Netmask', '10.21.36.67');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '1.1.1.1_32', 'IP Netmask', '1.1.1.1');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.0.0.0_8', 'IP Netmask', '10.0.0.0/8');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.1.0.0_16', 'IP Netmask', '10.1.0.0/16');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.1.0.0_24', 'IP Netmask', '10.1.0.0/24');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.1.0.11', 'IP Netmask', '10.1.0.11');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.1.0.27', 'IP Netmask', '10.1.0.27');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.1.0.41-44', 'IP Range', '10.1.0.41-44');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.1.0.52-53', 'IP Range', '10.1.0.52-53');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.1.10.39', 'IP Netmask', '10.1.10.39');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.100.0.0_16', 'IP Netmask', '10.100.0.0/16');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.100.1.43', 'IP Netmask', '10.100.1.43/32');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.100.10.0_24', 'IP Netmask', '10.100.10.0/24');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.100.10.202', 'IP Netmask', '10.100.10.202');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.100.10.204', 'IP Netmask', '10.100.10.204');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.100.10.205', 'IP Netmask', '10.100.10.205');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.100.10.237-240', 'IP Range', '10.100.10.237-240');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.100.10.243', 'IP Netmask', '10.100.10.243');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.100.11.0-24', 'IP Netmask', '10.100.11.0/24');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.100.11.16', 'IP Netmask', '10.100.11.16');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.100.13.15-32', 'IP Netmask', '10.100.13.15/32');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.100.14.0_25', 'IP Netmask', '10.100.14.0/25');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.100.14.9', 'IP Netmask', '10.100.14.9/32');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.100.15.0-24', 'IP Netmask', '10.100.15.0/24');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.100.23.1', 'IP Netmask', '10.100.23.1/32');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.100.23.4', 'IP Netmask', '10.100.23.4/32');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.101.0.0_16', 'IP Netmask', '10.101.0.0/16');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.0.0_16', 'IP Netmask', '10.102.0.0/16');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.1.0', 'IP Netmask', '10.102.1.0/24');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.1.1-254', 'IP Range', '10.102.1.1-254');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.1.102', 'IP Netmask', '10.102.1.102/32');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.1.108', 'IP Netmask', '10.102.1.108/32');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.1.113-117', 'IP Range', '10.102.1.113-117');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.1.121', 'IP Netmask', '10.102.1.121/32');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.1.125', 'IP Netmask', '10.102.1.125/32');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.1.200', 'IP Netmask', '10.102.1.200');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.1.209', 'IP Netmask', '10.102.1.209');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.1.45-220', 'IP Range', '10.102.1.45-220');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.14.0_24', 'IP Netmask', '10.102.14.0/24');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.14.70-71', 'IP Range', '10.102.14.70-71');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.20.0_24', 'IP Netmask', '10.102.20.0/24');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.20.11', 'IP Netmask', '10.102.20.11');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.21.0_24', 'IP Netmask', '10.102.21.0/24');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.22.0_24', 'IP Netmask', '10.102.22.0/24');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.23.0_24', 'IP Netmask', '10.102.23.0/24');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.3.0_24', 'IP Netmask', '10.102.3.0/24');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.3.10-150', 'IP Range', '10.102.3.10-150');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.3.121', 'IP Netmask', '10.102.3.121');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.3.18', 'IP Netmask', '10.102.3.18');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.3.233', 'IP Netmask', '10.102.3.233');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.102.3.235', 'IP Netmask', '10.102.3.235');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.21.60.172_32', 'IP Netmask', '10.21.60.172');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY95', '10.21.36.67_32', 'IP Netmask', '10.21.36.67');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY02 (VDOM-FWRY13)', '172.20.169.133_32', 'IP Netmask', '172.20.169.133');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY02 (VDOM-FWRY13)', '172.20.169.130_32', 'IP Netmask', '172.20.169.130');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY02 (VDOM-FWRY13)', '172.20.169.131_32', 'IP Netmask', '172.20.169.131');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY02 (VDOM-FWRY13)', '172.20.169.132_32', 'IP Netmask', '172.20.169.132');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY02 (VDOM-FWRY13)', '172.20.150.134_32', 'IP Netmask', '172.20.150.134');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY02 (VDOM-FWRY13)', '172.20.150.0_24', 'IP Netmask', '172.20.150.0/24');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY02 (VDOM-FWRY13)', '10.21.60.172_32', 'IP Netmask', '10.21.60.172');
+INSERT INTO `firewall_object_addresses` VALUES ('FWRY02 (VDOM-FWRY13)', '10.21.36.67_32', 'IP Netmask', '10.21.36.67');
 COMMIT;
 
 -- ----------------------------
@@ -124,33 +127,34 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `firewall_object_services`;
 CREATE TABLE `firewall_object_services` (
-  `ip` varchar(50) COLLATE latin1_general_ci NOT NULL,
+  `code` varchar(100) COLLATE latin1_general_ci NOT NULL DEFAULT '',
   `portname` varchar(50) COLLATE latin1_general_ci NOT NULL,
   `protocol` varchar(50) COLLATE latin1_general_ci NOT NULL,
   `portaddress` varchar(50) COLLATE latin1_general_ci NOT NULL,
-  KEY `select_idx` (`ip`,`portaddress`) USING BTREE
+  KEY `select_idx` (`code`,`portaddress`) USING BTREE,
+  KEY `select_idx1` (`code`,`protocol`,`portaddress`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 -- ----------------------------
 -- Records of firewall_object_services
 -- ----------------------------
 BEGIN;
-INSERT INTO `firewall_object_services` VALUES ('10.35.65.50', '1-19-tcp', 'TCP', '1-19');
-INSERT INTO `firewall_object_services` VALUES ('10.35.65.50', '1-500-tcp', 'TCP', '1-500');
-INSERT INTO `firewall_object_services` VALUES ('10.35.65.50', '1-500-udp', 'UDP', '1-500');
-INSERT INTO `firewall_object_services` VALUES ('10.35.65.50', '1-65000-tcp', 'TCP', '1-65000');
-INSERT INTO `firewall_object_services` VALUES ('10.35.65.50', '1-65000-udp', 'UDP', '1-65000');
-INSERT INTO `firewall_object_services` VALUES ('10.35.65.50', '1-65535-tcp', 'TCP', '1-65535');
-INSERT INTO `firewall_object_services` VALUES ('10.35.65.50', '1-65535-udp', 'UDP', '1-65535');
-INSERT INTO `firewall_object_services` VALUES ('10.35.65.50', '1-8-TCP', 'TCP', '1-8');
-INSERT INTO `firewall_object_services` VALUES ('10.35.65.50', '1-tcp', 'TCP', '1');
-INSERT INTO `firewall_object_services` VALUES ('10.35.65.50', '22-tcp', 'TCP', '22');
-INSERT INTO `firewall_object_services` VALUES ('10.35.65.95', '9081-tcp', 'TCP', '9081');
-INSERT INTO `firewall_object_services` VALUES ('10.35.65.95', '8443-tcp', 'TCP', '8443');
-INSERT INTO `firewall_object_services` VALUES ('10.35.65.95', '9082-tcp', 'TCP', '9082');
-INSERT INTO `firewall_object_services` VALUES ('10.35.65.95', '5666-tcp', 'TCP', '5666');
-INSERT INTO `firewall_object_services` VALUES ('10.35.65.95', '3389-tcp', 'TCP', '3389');
-INSERT INTO `firewall_object_services` VALUES ('10.35.65.95', '22-tcp', 'TCP', '22');
+INSERT INTO `firewall_object_services` VALUES ('FWRY95', '1-19-tcp', 'TCP', '1-19');
+INSERT INTO `firewall_object_services` VALUES ('FWRY95', '1-500-tcp', 'TCP', '1-500');
+INSERT INTO `firewall_object_services` VALUES ('FWRY95', '1-500-udp', 'UDP', '1-500');
+INSERT INTO `firewall_object_services` VALUES ('FWRY95', '1-65000-tcp', 'TCP', '1-65000');
+INSERT INTO `firewall_object_services` VALUES ('FWRY95', '1-65000-udp', 'UDP', '1-65000');
+INSERT INTO `firewall_object_services` VALUES ('FWRY95', '1-65535-tcp', 'TCP', '1-65535');
+INSERT INTO `firewall_object_services` VALUES ('FWRY95', '1-65535-udp', 'UDP', '1-65535');
+INSERT INTO `firewall_object_services` VALUES ('FWRY95', '1-8-TCP', 'TCP', '1-8');
+INSERT INTO `firewall_object_services` VALUES ('FWRY95', '1-tcp', 'TCP', '1');
+INSERT INTO `firewall_object_services` VALUES ('FWRY95', '22-tcp', 'TCP', '22');
+INSERT INTO `firewall_object_services` VALUES ('FWRY02 (VDOM-FWRY13)', '9081-tcp', 'TCP', '9081');
+INSERT INTO `firewall_object_services` VALUES ('FWRY02 (VDOM-FWRY13)', '8443-tcp', 'TCP', '8443');
+INSERT INTO `firewall_object_services` VALUES ('FWRY02 (VDOM-FWRY13)', '9082-tcp', 'TCP', '9082');
+INSERT INTO `firewall_object_services` VALUES ('FWRY02 (VDOM-FWRY13)', '5666-tcp', 'TCP', '5666');
+INSERT INTO `firewall_object_services` VALUES ('FWRY02 (VDOM-FWRY13)', '3389-tcp', 'TCP', '3389');
+INSERT INTO `firewall_object_services` VALUES ('FWRY02 (VDOM-FWRY13)', '22-tcp', 'TCP', '22');
 COMMIT;
 
 -- ----------------------------
@@ -158,21 +162,21 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `firewall_request`;
 CREATE TABLE `firewall_request` (
-  `RequestID` varchar(200) NOT NULL,
-  `Comment` varchar(5000) NOT NULL,
-  `Src` varchar(2000) NOT NULL,
-  `Dst` varchar(2000) NOT NULL,
-  `Port` varchar(1000) NOT NULL,
-  `Protocol` varchar(200) NOT NULL,
-  `application` varchar(500) NOT NULL,
-  `bidirectional` varchar(500) NOT NULL,
-  `fw` varchar(500) NOT NULL,
-  `fw_subnet` varchar(100) NOT NULL,
-  `fw_intf` varchar(500) NOT NULL,
-  `fw_vendor` varchar(100) NOT NULL,
+  `RequestID` varchar(200) CHARACTER SET utf8mb4 NOT NULL,
+  `Comment` varchar(5000) CHARACTER SET utf8mb4 NOT NULL,
+  `Src` varchar(2000) CHARACTER SET utf8mb4 NOT NULL,
+  `Dst` varchar(2000) CHARACTER SET utf8mb4 NOT NULL,
+  `Port` varchar(1000) CHARACTER SET utf8mb4 NOT NULL,
+  `Protocol` varchar(200) CHARACTER SET utf8mb4 NOT NULL,
+  `application` varchar(500) CHARACTER SET utf8mb4 NOT NULL,
+  `bidirectional` varchar(500) CHARACTER SET utf8mb4 NOT NULL,
+  `fw` varchar(500) CHARACTER SET utf8mb4 NOT NULL,
+  `fw_subnet` varchar(100) CHARACTER SET utf8mb4 NOT NULL,
+  `fw_intf` varchar(500) CHARACTER SET utf8mb4 NOT NULL,
+  `fw_vendor` varchar(100) CHARACTER SET utf8mb4 NOT NULL,
   `executed` tinyint(1) unsigned NOT NULL DEFAULT '0',
-  `executed_by` varchar(500) NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `executed_by` varchar(500) CHARACTER SET utf8mb4 NOT NULL DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
 -- ----------------------------
 -- Records of firewall_request
