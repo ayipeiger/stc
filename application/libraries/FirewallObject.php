@@ -197,6 +197,7 @@ class FirewallObject implements JsonSerializable {
 
     public function jsonSerialize() {
         return [
+            'code' => $this->getCode(),
             'ip' => $this->getIp(),
             'port' => $this->getPort(),
             'isVdom' => $this->getIsVdom(),

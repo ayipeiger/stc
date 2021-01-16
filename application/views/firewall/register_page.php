@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="<?=base_url('assets/css/dataTables.bootstrap.min.css')?>">
 <script src="<?=base_url('assets/js/jquery-3.3.1.js')?>"></script>
 <script src="<?=base_url('assets/js/bootstrap.min.js')?>"></script>
+<script src="<?=base_url('assets/js/bootstrap-autocomplete.min.js')?>"></script>
 <script src="<?=base_url('assets/js/jquery.dataTables.min.js')?>"></script>
 <script src="<?=base_url('assets/js/dataTables.bootstrap.min.js')?>"></script>
 <script src="<?=base_url('assets/js/jquery.form.min.js')?>"></script>
@@ -27,12 +28,24 @@
         border-color: #4aba70; 
     }
     .btn-stc {
+        border-radius: 2px; 
+        transition: all 0.5s;
         background: #703081;
         border: none;
         line-height: normal;
     }
     .btn-stc:hover, .btn-stc:focus {
         background: #5a1d6b;
+    }
+    .btn-stc-reset {
+        border-radius: 2px; 
+        transition: all 0.5s;
+        background: #f0af50;
+        border: none;
+        line-height: normal;
+    }
+    .btn-stc-reset:hover, .btn-stc-reset:focus {
+        background: #dd8a12;
     }
     .header {
         color: #434343;
@@ -84,7 +97,7 @@
     .register-form .form-group {
         margin-bottom: 20px;
     }
-    .register-form .form-control, .register-form .btn-stc {
+    .register-form .form-control, .register-form {
         min-height: 40px;
         border-radius: 2px; 
         transition: all 0.5s;
@@ -118,11 +131,239 @@
     textarea {
         resize: none;
     }
+
+    #ajax-loader{
+        background: #000;
+        opacity:0.4;
+        filter: alpha(opacity=40);
+        top:0;
+        left:0;
+        width: 100%;
+        height: 100%;
+        position: fixed !important;
+        position: absolute; /*ie6 and above*/
+        z-index: 9999;
+        padding: 0px;
+        text-align:center;
+        color: #010080;
+        letter-spacing: 2px;
+    }
+    .loader-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+    }
+
+    .dash {
+      margin: 0 15px;
+      width: 35px;
+      height: 15px;
+      border-radius: 8px;
+      background: #703081;
+      box-shadow: 0 0 10px 0 #FECDFF;
+    }
+
+    .uno {
+      margin-right: -18px;
+      transform-origin: center left;
+      animation: spin 3s linear infinite;  
+    }
+
+    .dos {
+      transform-origin: center right;
+      animation: spin2 3s linear infinite;
+      animation-delay: .2s;
+    }
+
+    .tres {
+      transform-origin: center right;
+      animation: spin3 3s linear infinite;
+      animation-delay: .3s;
+    }
+
+    .cuatro {
+      transform-origin: center right;
+      animation: spin4 3s linear infinite;
+      animation-delay: .4s;
+    }
+
+    .toggle-log {
+        cursor: pointer;
+        color: #337ab7
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      25% {
+        transform: rotate(360deg);
+      }
+      30% {
+        transform: rotate(370deg);
+      }
+      35% {
+        transform: rotate(360deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes spin2 {
+      0% {
+        transform: rotate(0deg);
+      }
+      20% {
+        transform: rotate(0deg);
+      }
+      30% {
+        transform: rotate(-180deg);
+      }
+      35% {
+        transform: rotate(-190deg);
+      }
+      40% {
+        transform: rotate(-180deg);
+      }
+      78% {
+        transform: rotate(-180deg);
+      }
+      95% {
+        transform: rotate(-360deg);
+      }
+      98% {
+        transform: rotate(-370deg);
+      }
+      100% {
+        transform: rotate(-360deg);
+      }
+    }
+
+    @keyframes spin3 {
+      0% {
+        transform: rotate(0deg);
+      }
+      27% {
+        transform: rotate(0deg);  
+      }
+      40% {
+        transform: rotate(180deg);
+      }
+      45% {
+        transform: rotate(190deg);
+      }
+      50% {
+        transform: rotate(180deg);
+      }
+      62% {
+        transform: rotate(180deg);
+      }
+      75% {
+        transform: rotate(360deg);
+      }
+      80% {
+        transform: rotate(370deg);
+      }
+      85% {
+        transform: rotate(360deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes spin4 {
+      0% {
+        transform: rotate(0deg);
+      }
+      38% {
+        transform: rotate(0deg);
+      }
+      60% {
+        transform: rotate(-360deg);
+      }
+      65% {
+        transform: rotate(-370deg);
+      }
+      75% {
+        transform: rotate(-360deg);
+      }
+      100% {
+        transform: rotate(-360deg);
+      }
+    }
+
 </style>
 <script type="text/javascript">
 	$(document).ready(function(){
 
 		var lastTextAreaFocused;
+
+        $('#firewall-code').autoComplete({
+            resolverSettings: {
+                url: '<?=site_url('Firewall/list_firewallcode')?>'
+            },
+            formatResult: function (item) {
+                return {
+                    value: 0,
+                    text: item
+                };
+            },
+            minLength: 3,
+            noResultsText: "No data found"
+        });
+        
+        $('#firewall-code').on('autocomplete.select', function (evt, value) {
+            var arrObj = value.split('|');
+            var firewallCode = arrObj[0].trim();
+            var firewallIp = arrObj[1].trim();
+            var firewallPort = arrObj[2].trim();
+            var firewallVdom = arrObj[3].trim();
+
+            $.ajax({
+                url: '<?=site_url('Firewall/get_firewall')?>',
+                type: 'post',
+                dataType: 'json',
+                data: 'firewall_code='+firewallCode,
+                beforeSend: function() {
+                    $('#ajax-loader').show();
+                },
+                error: function() {
+                    $('#ajax-loader').hide();
+                },
+                success: function(response) {
+                    $('#ajax-loader').hide();
+                    $('#firewall-code').val(response.code);
+                    $('#firewall').val(response.ip);
+                    $('#port').val(response.port);
+                    $('#vdom').val(response.nameVdom);
+                    $('#txtarea-setup-template').val(response.setupCommandTemplate);
+                    var arrSpesialCommandAddressTemplate = response.spesialCommandAddressTemplate.split('~~');
+                    $('#txtarea-spesial-address-1-template').val(arrSpesialCommandAddressTemplate[0].trim());
+                    $('#txtarea-spesial-address-2-template').val(arrSpesialCommandAddressTemplate[1].trim());
+                    $('#txtarea-spesial-address-3-template').val(arrSpesialCommandAddressTemplate[2].trim());
+                    var arrSpesialCommandPortTemplate = response.spesialCommandPortTemplate.split('~~');
+                    $('#txtarea-spesial-port-tcp-template').val(arrSpesialCommandPortTemplate[0].trim());
+                    $('#txtarea-spesial-port-udp-template').val(arrSpesialCommandPortTemplate[1].trim());
+                }
+            });
+        });
+
+        $('#btn-reset').click(function() {
+            $('#firewall-code').val('');
+            $('#firewall').val('');
+            $('#port').val('');
+            $('#vdom').val('');
+            $('#txtarea-setup-template').val('');
+            $('#txtarea-spesial-address-1-template').val('');
+            $('#txtarea-spesial-address-2-template').val('');
+            $('#txtarea-spesial-address-3-template').val('');
+            $('#txtarea-spesial-port-tcp-template').val('');
+            $('#txtarea-spesial-port-udp-template').val('');
+        });
 
         $("textarea").focus(function() {
             lastTextAreaFocused = $(this);
@@ -212,6 +453,14 @@
 </script>
 </head>
 <body>
+    <div id="ajax-loader" style="display: none;">
+        <div class="loader-container">
+          <div class="dash uno"></div>
+          <div class="dash dos"></div>
+          <div class="dash tres"></div>
+          <div class="dash cuatro"></div>
+        </div>
+    </div>
     <div class="header">
         <div class="row">
             <div class="col-lg-8 col-md-8 text-left">
@@ -229,20 +478,20 @@
         </div>
 	</div>
 	<div class="register-form">
-        <form method="post" accept-charset="utf-8" action="<?=site_url('Firewall/register')?>">
+        <form method="post" accept-charset="utf-8" action="<?=site_url('Firewall/register')?>" onsubmit="return confirm('Are you sure you want to register this firewall?');">
             <div class="avatar"><span class="glyphicon glyphicon-fire" aria-hidden="true" style="font-size: 4.5em"></span></div>
             <h4 class="modal-title">Register New Firewall</h4>
             <div class="form-group">
                 <div class="row">
                     <div class="col-xs-12">
-                        <input type="text" id="firewall" name="firewall" class="form-control" placeholder="Firewall" required="required" autocomplete="off">
+                        <input type="text" id="firewall-code" name="firewall_code" class="form-control" placeholder="Firewall Code" required="required" autocomplete="off">
                     </div>
                 </div>
             </div>
             <div class="form-group">
                 <div class="row">
                     <div class="col-xs-12">
-                        <input type="text" id="firewall-code" name="firewall_code" class="form-control" placeholder="Firewall Code" required="required" autocomplete="off">
+                        <input type="text" id="firewall" name="firewall" class="form-control" placeholder="Firewall" required="required" autocomplete="off">
                     </div>
                 </div>
             </div>
@@ -311,7 +560,8 @@
                 <?=$error_message?>
             </div>
             <?php endif; ?>
-            <button type="submit" name="submit" class="btn-stc btn btn-primary btn-block btn-lg" value="register">Register</button>              
+            <button type="reset" id="btn-reset" name="reset" class="btn-stc-reset btn btn-primary btn-block btn-lg" value="reset" style="margin-top: 15px;">Reset</button>            
+            <button type="submit" name="submit" class="btn-stc btn btn-primary btn-block btn-lg" value="register" style="margin-top: 15px;">Register</button>              
         </form>
     </div>
 </body>

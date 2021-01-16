@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class FirewallServiceObject {
 
-	private $ip;
+    private $code;
 	private $portname;
 	private $protocol;
 	private $portAddress;
@@ -11,14 +11,14 @@ class FirewallServiceObject {
 
 	/**
 	 * Class Constructor
-	 * @param    $ip   
+	 * @param    $code   
 	 * @param    $portname   
 	 * @param    $protocol   
 	 * @param    $portAddress   
 	 */
-	public function __construct($ip = null, $portname = null, $protocol = null, $portAddress = null)
+	public function __construct($code = null, $portname = null, $protocol = null, $portAddress = null)
 	{
-		$this->ip = $ip;
+        $this->code = $code;
 		$this->portname = $portname;
 		$this->protocol = $protocol;
 		$this->portAddress = $portAddress;
@@ -27,19 +27,19 @@ class FirewallServiceObject {
     /**
      * @return mixed
      */
-    public function getIp()
+    public function getCode()
     {
-        return $this->ip;
+        return $this->code;
     }
 
     /**
-     * @param mixed $ip
+     * @param mixed $code
      *
      * @return self
      */
-    public function setIp($ip)
+    public function setCode($code)
     {
-        $this->ip = $ip;
+        $this->code = $code;
 
         return $this;
     }

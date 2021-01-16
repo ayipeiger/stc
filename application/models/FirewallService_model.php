@@ -3,24 +3,24 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class FirewallService_model extends CI_Model {
 
-	public function find_all_registered($ip) {
-		$this->db->select('ip, portname, protocol, portaddress');
-		$this->db->where('ip', $ip);
+	public function find_all_registered($code) {
+		$this->db->select('code, portname, protocol, portaddress');
+		$this->db->where('code', $code);
 		$resultSet = $this->db->get('firewall_object_services');
 
 		$data = array();
 		if($resultSet->num_rows() > 0) {
 			foreach($resultSet->result() as $row) {
-				$data[] = new FirewallServiceObject($row->ip, $row->portname, $row->protocol, $row->portaddress);
+				$data[] = new FirewallServiceObject($row->code, $row->ip, $row->portname, $row->protocol, $row->portaddress);
 			}
 		}
 		
 		return $data;
 	}
 
-	public function find_by_portaddress($ip, $protocol, $portaddress) {
-		$this->db->select('ip, portname, protocol, portaddress');
-		$this->db->where('ip', $ip);
+	public function find_by_portaddress($code, $protocol, $portaddress) {
+		$this->db->select('code, portname, protocol, portaddress');
+		$this->db->where('code', $code);
 		$this->db->where('protocol', $protocol);
 		$this->db->where('portaddress', $portaddress);
 		$resultSet = $this->db->get('firewall_object_services');
@@ -28,7 +28,7 @@ class FirewallService_model extends CI_Model {
 		$data = array();
 		if($resultSet->num_rows() > 0) {
 			$row = $resultSet->row();
-			$data = new FirewallServiceObject($row->ip, $row->portname, $row->protocol, $row->portaddress);
+			$data = new FirewallServiceObject($row->code, $row->ip, $row->portname, $row->protocol, $row->portaddress);
 		}
 		
 		return $data;
@@ -41,7 +41,7 @@ class FirewallService_model extends CI_Model {
 		}
 
 		$data = array(
-				'ip' => $firewallServicesObj->getIp(),
+				'code' => $firewallServicesObj->getCode(),
 				'portname' => $firewallServicesObj->getPortname(),
 				'protocol' => $firewallServicesObj->getProtocol(),
 				'portaddress' => $firewallServicesObj->getPortAddress()
@@ -63,7 +63,7 @@ class FirewallService_model extends CI_Model {
 			}
 
 			$data[] = array(
-					'ip' => $firewallServicesObj->getIp(),
+					'code' => $firewallServicesObj->getCode(),
 					'portname' => $firewallServicesObj->getPortname(),
 					'protocol' => $firewallServicesObj->getProtocol(),
 					'portaddress' => $firewallServicesObj->getPortAddress()
@@ -73,8 +73,8 @@ class FirewallService_model extends CI_Model {
 		return boolval($affectedRow);
 	}
 
-	public function truncate_entry($ip) {
-		$this->db->where('ip', $ip);
+	public function truncate_entry($code) {
+		$this->db->where('code', $code);
 		$affectedRow = $this->db->delete('firewall_object_services');
 		return boolval($affectedRow);
 	}

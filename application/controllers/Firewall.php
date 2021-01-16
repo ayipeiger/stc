@@ -1,4 +1,4 @@
-<?php
+ <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Firewall extends CI_Controller {
@@ -136,7 +136,7 @@ class Firewall extends CI_Controller {
                 throw new Exception("File excel is empty");
             }
 
-            $affectedRow = $this->firewalladdress_model->truncate_entry($this->input->post('ip_address_object'));
+            $affectedRow = $this->firewalladdress_model->truncate_entry($this->input->post('code_address_object'));
 
             $arrFirewalAddressObj = array();
             for($counter_row = 2; $counter_row <= $highestRow; $counter_row++) {
@@ -148,7 +148,7 @@ class Firewall extends CI_Controller {
                     }
                 }
 
-                $firewallAddressObj = new FirewallAddressObject($this->input->post('ip_address_object'), $objActiveWorksheet->getCell("A".$counter_row)->getValue(), $objActiveWorksheet->getCell("B".$counter_row)->getValue(), $address);
+                $firewallAddressObj = new FirewallAddressObject($this->input->post('code_address_object'), $objActiveWorksheet->getCell("A".$counter_row)->getValue(), $objActiveWorksheet->getCell("B".$counter_row)->getValue(), $address);
                 $arrFirewalAddressObj[] = $firewallAddressObj;
             }
             $affectedRow = $this->firewalladdress_model->insert_batch_entry($arrFirewalAddressObj);
@@ -196,11 +196,11 @@ class Firewall extends CI_Controller {
                 throw new Exception("File excel is empty");
             }
 
-            $affectedRow = $this->firewallservice_model->truncate_entry($this->input->post('ip_service_object'));
+            $affectedRow = $this->firewallservice_model->truncate_entry($this->input->post('code_service_object'));
 
             $arrFirewalServicesObj = array();
             for($counter_row = 2; $counter_row <= $highestRow; $counter_row++) {
-                $firewallServicesObj = new FirewallServiceObject($this->input->post('ip_service_object'), $objActiveWorksheet->getCell("A".$counter_row)->getValue(), $objActiveWorksheet->getCell("B".$counter_row)->getValue(), $objActiveWorksheet->getCell("C".$counter_row)->getValue());
+                $firewallServicesObj = new FirewallServiceObject($this->input->post('code_service_object'), $objActiveWorksheet->getCell("A".$counter_row)->getValue(), $objActiveWorksheet->getCell("B".$counter_row)->getValue(), $objActiveWorksheet->getCell("C".$counter_row)->getValue());
                 $arrFirewalServicesObj[] = $firewallServicesObj;
             }
             $affectedRow = $this->firewallservice_model->insert_batch_entry($arrFirewalServicesObj);
@@ -533,32 +533,32 @@ class Firewall extends CI_Controller {
 
     public function registered_template()
     {
-        $ip = $this->input->get('ip');
-        $data['firewall'] = $this->firewall_model->find_single_entry($ip);
+        $code = $this->input->get('code');
+        $data['firewall'] = $this->firewall_model->find_single_entry_by_fwcode($code);
         $this->load->view('firewall/registered_template_page', $data);
     }
 
     public function registered_address()
     {
-        $ip = $this->input->get('ip');
-        $data['arrFirewallAddress'] = $this->firewalladdress_model->find_all_registered($ip);
+        $code = $this->input->get('code');
+        $data['arrFirewallAddress'] = $this->firewalladdress_model->find_all_registered($code);
         $this->load->view('firewall/registered_address_page', $data);
     }
 
     public function registered_service()
     {
-        $ip = $this->input->get('ip');
-        $data['arrFirewallService'] = $this->firewallservice_model->find_all_registered($ip);
+        $code = $this->input->get('code');
+        $data['arrFirewallService'] = $this->firewallservice_model->find_all_registered($code);
         $this->load->view('firewall/registered_service_page', $data);
     }
 
     public function delete_registered()
     {
-        $firewallObj = new FirewallObject($this->input->post('ip'));
+        $firewallObj = new FirewallObject(null, $this->input->post('code'));
         $this->db->trans_start();
         $affectedRow = $this->firewall_model->delete_entry($firewallObj);
-        $affectedRow = $this->firewalladdress_model->truncate_entry($firewallObj->getIp());
-        $affectedRow = $this->firewallservice_model->truncate_entry($firewallObj->getIp());
+        $affectedRow = $this->firewalladdress_model->truncate_entry($firewallObj->getCode());
+        $affectedRow = $this->firewallservice_model->truncate_entry($firewallObj->getCode());
         $this->db->trans_complete();
         if($this->db->trans_status() === TRUE) {
             $response = array('status' => true, 'status_desc' => 'success');
@@ -636,9 +636,17 @@ class Firewall extends CI_Controller {
         $arrFirewall = $this->firewall_model->find_all_entry_by_fwcode($query);
         $data['arrFirewall'] = array();
         foreach($arrFirewall as $row) {
-            $data['arrFirewall'][] = $row->getCode()."|".$row->getIp()."|".$row->getPort();
+            $data['arrFirewall'][] = $row->getCode()."|".$row->getIp()."|".$row->getPort()."|".$row->getNameVdom();
         }
         return $this->output->set_content_type('application/json')->set_status_header(200)->set_output(json_encode($data['arrFirewall']));
+    }
+
+    public function get_firewall()
+    {
+        $postFirewallCode = $this->input->post('firewall_code');
+        $firewallObj = $this->firewall_model->find_single_entry_by_fwcode($postFirewallCode);
+
+        echo json_encode($firewallObj->jsonSerialize());
     }
 
     public function generate_command_template() 
@@ -648,9 +656,9 @@ class Firewall extends CI_Controller {
         $postIpDestination = str_replace(" ", "", $this->input->post('ip_destination'));
         $postTcpPort = str_replace(" ", "", $this->input->post('tcp_port'));
         $postUdpPort = str_replace(" ", "", $this->input->post('udp_port'));
-        $postFirewall = $this->input->post('firewall');
+        $postFirewallCode = $this->input->post('firewall_code');
 
-        $firewallObj = $this->firewall_model->find_single_entry_by_fwcode($postFirewall);
+        $firewallObj = $this->firewall_model->find_single_entry_by_fwcode($postFirewallCode);
         if($firewallObj instanceof FirewallObject) {
             $mappingNotFound = false;
             $mappingNotFoundDesc = "";
@@ -661,7 +669,7 @@ class Firewall extends CI_Controller {
             $arrParsedIpSource = array();
             $arrNotFoundIpSource = array();
             foreach($arrIpSource as $row) {
-                $ipSrcFirewallObj = $this->firewalladdress_model->find_by_address($firewallObj->getIp(), $row);
+                $ipSrcFirewallObj = $this->firewalladdress_model->find_by_address($firewallObj->getCode(), $row);
                 if($ipSrcFirewallObj instanceof FirewallAddressObject) {
                     $arrParsedIpSource[] = $ipSrcFirewallObj->getIpname();
                 } else {
@@ -685,7 +693,7 @@ class Firewall extends CI_Controller {
             $arrParsedIpDestination = array();
             $arrNotFoundIpDestination = array();
             foreach($arrIpDestination as $row) {
-                $ipDestFirewallObj = $this->firewalladdress_model->find_by_address($firewallObj->getIp(), $row);
+                $ipDestFirewallObj = $this->firewalladdress_model->find_by_address($firewallObj->getCode(), $row);
                 if($ipDestFirewallObj instanceof FirewallAddressObject) {
                     $arrParsedIpDestination[] = $ipDestFirewallObj->getIpname();
                 } else {
@@ -709,7 +717,7 @@ class Firewall extends CI_Controller {
             $arrParsedTcpPort = array();
             $arrNotFoundTcpPort = array();
             foreach($arrTcpPort as $row) {
-                $tcpPortFirewallObj = $this->firewallservice_model->find_by_portaddress($firewallObj->getIp(), "TCP", $row);
+                $tcpPortFirewallObj = $this->firewallservice_model->find_by_portaddress($firewallObj->getCode(), "TCP", $row);
                 if($tcpPortFirewallObj instanceof FirewallServiceObject) {
                     $arrParsedTcpPort[] = $tcpPortFirewallObj->getPortname();
                 } else {
@@ -725,7 +733,7 @@ class Firewall extends CI_Controller {
             $arrParsedUdpPort = array();
             $arrNotFoundUdpPort = array();
             foreach ($arrUdpPort as $row) {
-                $udpPortFirewallObj = $this->firewallservice_model->find_by_portaddress($firewallObj->getIp(), "UDP", $row);
+                $udpPortFirewallObj = $this->firewallservice_model->find_by_portaddress($firewallObj->getCode(), "UDP", $row);
                 if($udpPortFirewallObj instanceof FirewallServiceObject) {
                     $arrParsedUdpPort[] = $udpPortFirewallObj->getPortname();
                 } else if($row !== "") {
@@ -939,7 +947,7 @@ class Firewall extends CI_Controller {
                 if(count($postArrNotFoundIpSource) > 0) {
                     $arrFirewallAddressObj = array();
                     foreach($postArrNotFoundIpSource as $key => $val) {
-                        $arrFirewallAddressObj[] = new FirewallAddressObject($firewallObj->getIp(), $val, 'IP Netmask', $key);
+                        $arrFirewallAddressObj[] = new FirewallAddressObject($firewallObj->getCode(), $val, 'IP Netmask', $key);
                     }
                     $this->firewalladdress_model->insert_batch_entry($arrFirewallAddressObj);
                 }
@@ -947,7 +955,7 @@ class Firewall extends CI_Controller {
                 if(count($postArrNotFoundIpDestination) > 0) {
                     $arrFirewallAddressObj = array();
                     foreach($postArrNotFoundIpDestination as $key => $val) {
-                        $arrFirewallAddressObj[] = new FirewallAddressObject($firewallObj->getIp(), $val, 'IP Netmask', $key);
+                        $arrFirewallAddressObj[] = new FirewallAddressObject($firewallObj->getCode(), $val, 'IP Netmask', $key);
                     }
                     $this->firewalladdress_model->insert_batch_entry($arrFirewallAddressObj);
                 }
@@ -983,7 +991,7 @@ class Firewall extends CI_Controller {
                     $resultLogPortCommand .= "============ Error Stream ============".PHP_EOL;
                     $resultLogPortCommand .= $resultIOPortCommand;
                     $resultLogPortCommand .= "============ IO Stream ============".PHP_EOL;
-                    $resultLogPortCommand .- $resultErrPortCommand;
+                    $resultLogPortCommand .= $resultErrPortCommand;
 
                     if(!empty($resultLogPortCommand) && strpos($resultLogPortCommand, "fail") === false) {
                         $resultPortCommand = true;
@@ -1000,7 +1008,7 @@ class Firewall extends CI_Controller {
                 if(count($postArrNotFoundTcpPort) > 0) {
                     $arrFirewallServiceObj = array();
                     foreach($postArrNotFoundTcpPort as $key => $val) {
-                        $arrFirewallServiceObj[] = new FirewallServiceObject($firewallObj->getIp(), $val, 'TCP', $key);
+                        $arrFirewallServiceObj[] = new FirewallServiceObject($firewallObj->getCode(), $val, 'TCP', $key);
                     }
                     $this->firewallservice_model->insert_batch_entry($arrFirewallServiceObj);
                 }
@@ -1008,7 +1016,7 @@ class Firewall extends CI_Controller {
                 if(count($postArrNotFoundUdpPort) > 0) {
                     $arrFirewallServiceObj = array();
                     foreach($postArrNotFoundUdpPort as $key => $val) {
-                        $arrFirewallServiceObj[] = new FirewallServiceObject($firewallObj->getIp(), $val, 'UDP', $key);
+                        $arrFirewallServiceObj[] = new FirewallServiceObject($firewallObj->getCode(), $val, 'UDP', $key);
                     }
                     $this->firewallservice_model->insert_batch_entry($arrFirewallServiceObj);
                 }

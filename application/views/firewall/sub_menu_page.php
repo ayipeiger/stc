@@ -121,6 +121,24 @@
             </a>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-4">
+            <a href="<?=site_url('Firewall/setup_request')?>">
+                <div class="menu-item">
+                    <div class="menu-icon"><span class="glyphicon glyphicon-ok" aria-hidden="true" style="font-size: 4.5em"></div>
+                    <div class="menu-title">HC</div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="<?=site_url('Firewall/setup_request')?>">
+                <div class="menu-item">
+                    <div class="menu-icon"><span class="glyphicon glyphicon-signal" aria-hidden="true" style="font-size: 4.5em"></div>
+                    <div class="menu-title">PMR</div>
+                </div>
+            </a>
+        </div>
+    </div>
 </div>
 
 </body>

@@ -3,31 +3,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class FirewallAddress_model extends CI_Model {
 
-	public function find_all_registered($ip) {
-		$this->db->select('ip, ipname, type, address');
-		$this->db->where('ip', $ip);
+	public function find_all_registered($code) {
+		$this->db->select('code, ipname, type, address');
+		$this->db->where('code', $code);
 		$resultSet = $this->db->get('firewall_object_addresses');
 
 		$data = array();
 		if($resultSet->num_rows() > 0) {
 			foreach($resultSet->result() as $row) {
-				$data[] = new FirewallAddressObject($row->ip, $row->ipname, $row->type, $row->address);
+				$data[] = new FirewallAddressObject($row->code, $row->ip, $row->ipname, $row->type, $row->address);
 			}
 		}
 		
 		return $data;
 	}
 
-	public function find_by_address($ip, $address) {
-		$this->db->select('ip, ipname, type, address');
-		$this->db->where('ip', $ip);
+	public function find_by_address($code, $address) {
+		$this->db->select('code, ipname, type, address');
+		$this->db->where('code', $code);
 		$this->db->where('address', $address);
 		$resultSet = $this->db->get('firewall_object_addresses');
 		
 		$data = new StdClass();
 		if($resultSet->num_rows() > 0) {
 			$row = $resultSet->row();
-			$data = new FirewallAddressObject($row->ip, $row->ipname, $row->type, $row->address);
+			$data = new FirewallAddressObject($row->code, $row->ip, $row->ipname, $row->type, $row->address);
 		}
 		
 		return $data;
@@ -40,7 +40,7 @@ class FirewallAddress_model extends CI_Model {
 		}
 
 		$data = array(
-				'ip' => $firewallAddressObj->getIp(),
+				'code' => $firewallAddressObj->getCode(),
 				'ipname' => $firewallAddressObj->getIpname(),
 				'type' => $firewallAddressObj->getType(),
 				'address' => $firewallAddressObj->getAddress()
@@ -62,7 +62,7 @@ class FirewallAddress_model extends CI_Model {
 			}
 
 			$data[] = array(
-					'ip' => $firewallAddressObj->getIp(),
+					'code' => $firewallAddressObj->getCode(),
 					'ipname' => $firewallAddressObj->getIpname(),
 					'type' => $firewallAddressObj->getType(),
 					'address' => $firewallAddressObj->getAddress()
@@ -72,8 +72,8 @@ class FirewallAddress_model extends CI_Model {
 		return boolval($affectedRow);
 	}
 
-	public function truncate_entry($ip) {
-		$this->db->where('ip', $ip);
+	public function truncate_entry($code) {
+		$this->db->where('code', $code);
 		$affectedRow = $this->db->delete('firewall_object_addresses');
 		return boolval($affectedRow);
 	}

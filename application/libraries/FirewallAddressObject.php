@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class FirewallAddressObject {
 
-	private $ip;
+    private $code;
 	private $ipname;
 	private $type;
 	private $address;
@@ -11,15 +11,15 @@ class FirewallAddressObject {
 
 	/**
 	 * Class Constructor
-	 * @param    $ip   
+	 * @param    $code   
 	 * @param    $ipname   
 	 * @param    $location   
 	 * @param    $type   
 	 * @param    $address   
 	 */
-	public function __construct($ip = null, $ipname = null, $type = null, $address = null)
+	public function __construct($code = null, $ipname = null, $type = null, $address = null)
 	{
-		$this->ip = $ip;
+        $this->code = $code;
 		$this->ipname = $ipname;
 		$this->type = $type;
 		$this->address = $address;
@@ -28,19 +28,19 @@ class FirewallAddressObject {
     /**
      * @return mixed
      */
-    public function getIp()
+    public function getCode()
     {
-        return $this->ip;
+        return $this->code;
     }
 
     /**
-     * @param mixed $ip
+     * @param mixed $code
      *
      * @return self
      */
-    public function setIp($ip)
+    public function setCode($code)
     {
-        $this->ip = $ip;
+        $this->code = $code;
 
         return $this;
     }

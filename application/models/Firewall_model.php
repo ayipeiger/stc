@@ -106,7 +106,7 @@ class Firewall_model extends CI_Model {
 			throw new RuntimeException ('Class is not instance of!');
 		}
 		
-		$affectedRow = $this->db->delete('firewall', array('ip' => $firewallObject->getIp()));
+		$affectedRow = $this->db->delete('firewall', array('code' => $firewallObject->getCode()));
 		return boolval($affectedRow);
 	}
 }

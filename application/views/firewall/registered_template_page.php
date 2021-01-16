@@ -265,7 +265,7 @@
         
 		<div class="main-content">
             <div style="margin-bottom: 20px;">
-                <h4>Firewall : <?=$firewall->getIp();?> Port : <?=$firewall->getPort();?> Vdom : <?=$firewall->getNameVdom();?></h4>
+                <h4>Firewall Code : <?=$firewall->getCode()?> IP : <?=$firewall->getIp();?> Port : <?=$firewall->getPort();?> Vdom : <?=$firewall->getNameVdom();?></h4>
             </div>
             <div style="margin-bottom: 20px;">
                 <h5>Setup Command Template</h5>

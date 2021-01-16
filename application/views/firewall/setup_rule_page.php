@@ -227,7 +227,6 @@
       }
     }
 
-
 </style>
 <script type="text/javascript">
     
@@ -243,7 +242,7 @@
             document.location = '<?=site_url('Firewall/sub_menu')?>';
         });
 
-        $('#firewall').autoComplete({
+        $('#firewall-code').autoComplete({
             resolverSettings: {
                 url: '<?=site_url('Firewall/list_firewallcode')?>'
             },
@@ -257,14 +256,14 @@
             noResultsText: "No data found"
         });
         
-        $('#firewall').on('autocomplete.select', function (evt, value) {
+        $('#firewall-code').on('autocomplete.select', function (evt, value) {
             var arrObj = value.split('|');
             if(arrObj[0] != 'undefined') {
-                $('#firewall').val(arrObj[0].trim());
+                $('#firewall-code').val(arrObj[0].trim());
             }
         });
 
-        $('#firewall').dblclick(function(){
+        $('#firewall-code').dblclick(function(){
             $(this).removeAttr('readonly');
         });
 
@@ -408,7 +407,7 @@
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-xs-12">
-                                    <input type="text" id="firewall" name="firewall" class="form-control" placeholder="Firewall" required="required" value="<?=$firewallCode?>" <?php if(isset($firewallCode) && !empty($firewallCode)):?>readonly
+                                    <input type="text" id="firewall-code" name="firewall_code" class="form-control" placeholder="Firewall" required="required" value="<?=$firewallCode?>" <?php if(isset($firewallCode) && !empty($firewallCode)):?>readonly
                                     <?php endif; ?> autocomplete="off">
                                 </div>
                             </div>

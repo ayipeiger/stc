@@ -271,7 +271,7 @@
 					url: '<?=site_url('Firewall/delete_registered')?>',
 					type: 'post',
 					dataType: 'json',
-					data: 'ip='+val,
+					data: 'code='+val,
 					beforeSend: function() {
 						$('#ajax-loader').show();
 					},
@@ -292,7 +292,7 @@
         $('.content').off('click', '.btn-show-template');
         $('.content').on('click', '.btn-show-template', function(){
             if(confirm('Are you sure to show template rule for this firewall?')) {
-                window.open("<?=site_url('Firewall/registered_template')?>?ip="+$(this).val(),"_self");
+                window.open("<?=site_url('Firewall/registered_template')?>?code="+$(this).val(),"_self");
             }
             return false;
         });
@@ -302,7 +302,7 @@
             if(confirm('Do you want to upload object address for this firewall?')) {
                 $('.bottom-content').show();
                 $('#form-upload-address').show();
-                $('#ip-address-object').val($(this).val());
+                $('#code-address-object').val($(this).val());
                 $('#response').hide().empty().val('');
             }
             return false;
@@ -311,7 +311,7 @@
         $('.content').off('click', '.btn-show-address');
         $('.content').on('click', '.btn-show-address', function(){
             if(confirm('Are you sure to show object address for this firewall?')) {
-                window.open("<?=site_url('Firewall/registered_address')?>?ip="+$(this).val(),"_self");
+                window.open("<?=site_url('Firewall/registered_address')?>?code="+$(this).val(),"_self");
             }
             return false;
         });
@@ -321,7 +321,7 @@
              if(confirm('Do you want to upload object address for this firewall?')) {
                 $('.bottom-content').show();
                 $('#form-upload-service').show();
-                $('#ip-services-object').val($(this).val());
+                $('#code-services-object').val($(this).val());
                 $('#response').hide().empty().val('');
             }
             return false;
@@ -330,7 +330,7 @@
         $('.content').off('click', '.btn-show-service');
         $('.content').on('click', '.btn-show-service', function(){
             if(confirm('Are you sure to show object service for this firewall?')) {
-                window.open("<?=site_url('Firewall/registered_service')?>?ip="+$(this).val(),"_self");
+                window.open("<?=site_url('Firewall/registered_service')?>?code="+$(this).val(),"_self");
             }
             return false;
         });
@@ -446,21 +446,21 @@
 									<td align="right"><?=$firewallObj->getPort()?></td>
 									<td align="center"><?=$firewallObj->getNameVdom() && !empty($firewallObj->getNameVdom()) ? $firewallObj->getNameVdom() : 'n/a'?></td>
 									<td align="center">
-                                        <button class="btn btn-sm btn-warning btn-show-template" value="<?=$firewallObj->getIp()?>"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> View</button>
+                                        <button class="btn btn-sm btn-warning btn-show-template" value="<?=$firewallObj->getCode()?>"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> View</button>
                                     </td>
                                     <td align="center">
                                         <div class="btn-group" role="group" aria-label="Basic example">
-                                            <button class="btn btn-sm btn-success btn-upload-address" value="<?=$firewallObj->getIp()?>"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Upload</button>
-                                            <button class="btn btn-sm btn-success btn-show-address" value="<?=$firewallObj->getIp()?>"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Show</button>
+                                            <button class="btn btn-sm btn-success btn-upload-address" value="<?=$firewallObj->getCode()?>"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Upload</button>
+                                            <button class="btn btn-sm btn-success btn-show-address" value="<?=$firewallObj->getCode()?>"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Show</button>
                                         </div>
                                     </td>
                                     <td align="center">
                                         <div class="btn-group" role="group" aria-label="Basic example">
-                                            <button class="btn btn-sm btn-success btn-upload-service" value="<?=$firewallObj->getIp()?>"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Upload</button>
-                                            <button class="btn btn-sm btn-success btn-show-service" value="<?=$firewallObj->getIp()?>"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Show</button>
+                                            <button class="btn btn-sm btn-success btn-upload-service" value="<?=$firewallObj->getCode()?>"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Upload</button>
+                                            <button class="btn btn-sm btn-success btn-show-service" value="<?=$firewallObj->getCode()?>"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Show</button>
                                         </div>
                                     </td>
-                                    <td align="center"><button class="btn btn-sm btn-danger btn-delete" value="<?=$firewallObj->getIp()?>"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>  Delete</button></td>
+                                    <td align="center"><button class="btn btn-sm btn-danger btn-delete" value="<?=$firewallObj->getCode()?>"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>  Delete</button></td>
 								</tr>
 							<?php endforeach?>
 						<?php endif; ?>
@@ -486,6 +486,7 @@
             <form id="form-upload-address" class="navbar-form" role="upload" method="post" enctype="multipart/form-data" action="<?=site_url('Firewall/save_file_address_object')?>" style="display: none;">
                 <span>Please input your firewall addresses file here :</span>
                 <div class="form-group">
+                    <input type="hidden" id="code-address-object" name="code_address_object" value="">
                     <input type="hidden" id="ip-address-object" name="ip_address_object" value="">
                     <input type="file" id="file-address-object" name="file_address_object" class="form-control" placeholder="File Address Object" style="height: auto; width: 470px;">
                 </div>
@@ -494,6 +495,7 @@
             <form id="form-upload-service" class="navbar-form" role="upload" method="post" enctype="multipart/form-data" action="<?=site_url('Firewall/save_file_service_object')?>" style="display: none;">
                 <span>Please input your firewall services file here :</span>
                 <div class="form-group">
+                    <input type="hidden" id="code-services-object" name="code_service_object" value="">
                     <input type="hidden" id="ip-services-object" name="ip_service_object" value="">
                     <input type="file" id="file-service-object" name="file_service_object" class="form-control" placeholder="File Service Object" style="height: auto; width: 470px;">
                 </div>
