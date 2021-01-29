@@ -11,7 +11,7 @@ class FirewallService_model extends CI_Model {
 		$data = array();
 		if($resultSet->num_rows() > 0) {
 			foreach($resultSet->result() as $row) {
-				$data[] = new FirewallServiceObject($row->code, $row->ip, $row->portname, $row->protocol, $row->portaddress);
+				$data[] = new FirewallServiceObject($row->code, $row->portname, $row->protocol, $row->portaddress);
 			}
 		}
 		
@@ -28,7 +28,7 @@ class FirewallService_model extends CI_Model {
 		$data = array();
 		if($resultSet->num_rows() > 0) {
 			$row = $resultSet->row();
-			$data = new FirewallServiceObject($row->code, $row->ip, $row->portname, $row->protocol, $row->portaddress);
+			$data = new FirewallServiceObject($row->code, $row->portname, $row->protocol, $row->portaddress);
 		}
 		
 		return $data;

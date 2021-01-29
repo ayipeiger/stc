@@ -8,6 +8,7 @@ class FirewallObject implements JsonSerializable {
     private $code;
 	private $isVdom;
 	private $nameVdom;
+    private $counter;
 	private $setupCommandTemplate;
 	private $spesialCommandAddressTemplate;
     private $spesialCommandPortTemplate;
@@ -23,13 +24,14 @@ class FirewallObject implements JsonSerializable {
 	 * @param    $spesialCommandAddressTemplate   
      * @param    $spesialCommandPortTemplate
 	 */
-	public function __construct($ip = null, $code = null, $port = null, $isVdom = null, $nameVdom = null, $setupCommandTemplate = null, $spesialCommandAddressTemplate = null, $spesialCommandPortTemplate = null)
+	public function __construct($ip = null, $code = null, $port = null, $isVdom = null, $nameVdom = null, $counter = 0, $setupCommandTemplate = null, $spesialCommandAddressTemplate = null, $spesialCommandPortTemplate = null)
 	{
 		$this->ip = $ip;
 		$this->port = $port;
         $this->code = $code;
 		$this->isVdom = $isVdom;
 		$this->nameVdom = $nameVdom;
+        $this->counter = $counter;
 		$this->setupCommandTemplate = $setupCommandTemplate;
 		$this->spesialCommandAddressTemplate = $spesialCommandAddressTemplate;
         $this->spesialCommandPortTemplate = $spesialCommandPortTemplate;
@@ -131,6 +133,26 @@ class FirewallObject implements JsonSerializable {
     public function setNameVdom($nameVdom)
     {
         $this->nameVdom = $nameVdom;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCounter()
+    {
+        return $this->counter;
+    }
+
+    /**
+     * @param mixed $counter
+     *
+     * @return self
+     */
+    public function setCounter($counter)
+    {
+        $this->counter = $counter;
 
         return $this;
     }

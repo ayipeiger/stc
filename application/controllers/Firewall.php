@@ -518,8 +518,7 @@ class Firewall extends CI_Controller {
             $spesialCommandPortUdpTemplate = $this->input->post('spesial_command_port_udp_template');
             $spesialCommandPortTemplate = $spesialCommandPortTcpTemplate."~~".$spesialCommandPortUdpTemplate;
 
-
-            $firewallObj = new FirewallObject($this->input->post('firewall'), $this->input->post('firewall_code'), $this->input->post('port'), $this->input->post('vdom')<>'' ? true : false, $this->input->post('vdom'), $this->input->post('setup_command_template'), $spesialCommandAddressTemplate, $spesialCommandPortTemplate);
+            $firewallObj = new FirewallObject($this->input->post('firewall'), $this->input->post('firewall_code'), $this->input->post('port'), $this->input->post('vdom')<>'' ? true : false, $this->input->post('vdom'), $this->input->post('counter') <> '' ? $this->input->post('counter') : 0, $this->input->post('setup_command_template'), $spesialCommandAddressTemplate, $spesialCommandPortTemplate);
             $result = $this->firewall_model->insert_entry($firewallObj);
         }
 		$this->load->view('firewall/register_page', $data);
@@ -753,6 +752,8 @@ class Firewall extends CI_Controller {
                 $setupCommandTemplate = str_replace("{#IPDEST}", $parsedIpDestination, $setupCommandTemplate);
                 $setupCommandTemplate = str_replace("{#PORTTCP}", $parsedTcpPort, $setupCommandTemplate);
                 $setupCommandTemplate = str_replace("{#PORTUDP}", $parsedUdpPort, $setupCommandTemplate);
+                $setupCommandTemplate = str_replace("{#COUNTER}", $firewallObj->getCounter(), $setupCommandTemplate);
+                $setupCommandTemplate = str_replace("{#COUNTER-1}", intval($firewallObj->getCounter())-1, $setupCommandTemplate);
                 $firewallObj->setSetupCommandTemplate($setupCommandTemplate);
             } else {
                 $spesialCommandAddressTemplate = $firewallObj->getSpesialCommandAddressTemplate();
@@ -897,6 +898,7 @@ class Firewall extends CI_Controller {
                 echo "Connection failed"; die;
             }
 
+            $affected_row = $this->firewall_model->counterIncrement($firewallObj);
             $affected_row = $this->firewallrequest_model->update_executed_request($postRequestNumber, $firewallObj->getCode(), $this->session->userdata('firewall_user'));
 
             $data['resultSetupCommand'] = $resultSetupCommand;

@@ -383,6 +383,18 @@
             area.val( area.val().substring(0, curPos) + '{#REQNUM}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+9, 'selectionEnd': curPos+9});
         });
 
+        $('#btn-counter').click(function(){
+            var area   = $('#txtarea-setup-template');
+            var curPos = area.prop('selectionEnd');
+            area.val( area.val().substring(0, curPos) + '{#COUNTER}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+10, 'selectionEnd': curPos+10});
+        });
+
+        $('#btn-countermin').click(function(){
+            var area   = $('#txtarea-setup-template');
+            var curPos = area.prop('selectionEnd');
+            area.val( area.val().substring(0, curPos) + '{#COUNTER-1}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+12, 'selectionEnd': curPos+12});
+        });
+
         $('#btn-vdom').click(function(){
             var area   = lastTextAreaFocused;
             var curPos = area.prop('selectionEnd');
@@ -449,6 +461,7 @@
             area.val( area.val().substring(0, curPos) + '{#PORTNAME}' + area.val().substring(curPos) ).focus().prop({'selectionStart': curPos+11, 'selectionEnd': curPos+11});
         });
 
+
 	});
 </script>
 </head>
@@ -497,11 +510,14 @@
             </div>
             <div class="form-group">
                 <div class="row">
-                    <div class="col-xs-6">
+                    <div class="col-xs-4">
                         <input type="text" id="port" name="port" class="form-control" placeholder="Port" required="required">
                     </div>
-                    <div class="col-xs-6">
+                    <div class="col-xs-4">
                         <input type="text" id="vdom" name="vdom" class="form-control" placeholder="Vdom">
+                    </div>
+                    <div class="col-xs-4">
+                        <input type="text" id="counter" name="counter" class="form-control" placeholder="Counter">
                     </div>
                 </div>
             </div>
@@ -513,7 +529,9 @@
                         <button type="button" id="btn-ipsrc" class="btn btn-primary btn-xs" style="margin-right: 5px;">{#IPSRC}</button>
                         <button type="button" id="btn-ipdest" class="btn btn-primary btn-xs" style="margin-right: 5px;">{#IPDEST}</button>
                         <button type="button" id="btn-porttcp" class="btn btn-primary btn-xs" style="margin-right: 5px;">{#PORTTCP}</button>
-                        <button type="button" id="btn-portudp" class="btn btn-primary btn-xs">{#PORTUDP}</button>
+                        <button type="button" id="btn-portudp" class="btn btn-primary btn-xs" style="margin-right: 5px;">{#PORTUDP}</button>
+                        <button type="button" id="btn-counter" class="btn btn-primary btn-xs" style="margin-right: 5px;">{#COUNTER}</button>
+                        <button type="button" id="btn-countermin" class="btn btn-primary btn-xs" style="margin-right: 5px;">{#COUNTER-1}</button>
                     </div>
                 </div>
             </div>

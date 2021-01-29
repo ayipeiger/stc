@@ -31,12 +31,13 @@ class Welcome extends CI_Controller {
 
 	public function testScriptNewAddress($ip) 
 	{
-		$connection = ssh2_connect("10.20.25.13", 22);
+		$connection = ssh2_connect("10.20.25.248", 22);
+		echo "halo"; die;
         if($connection) {
             $authentication = ssh2_auth_password($connection, "smry2018", "6nucvvX@");
 
             if($authentication) {
-                $stdout_stream = ssh2_exec($connection, "config vdom && edit WAN && config firewall address && edit ".$ip."_32 && set subnet ".$ip."/32 && next && end && end");
+                $stdout_stream = ssh2_exec($connection, "");
 
                 $sio_stream = ssh2_fetch_stream($stdout_stream, SSH2_STREAM_STDIO);
                 $err_stream = ssh2_fetch_stream($stdout_stream, SSH2_STREAM_STDERR);

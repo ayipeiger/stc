@@ -11,7 +11,7 @@ class FirewallAddress_model extends CI_Model {
 		$data = array();
 		if($resultSet->num_rows() > 0) {
 			foreach($resultSet->result() as $row) {
-				$data[] = new FirewallAddressObject($row->code, $row->ip, $row->ipname, $row->type, $row->address);
+				$data[] = new FirewallAddressObject($row->code, $row->ipname, $row->type, $row->address);
 			}
 		}
 		
@@ -27,7 +27,7 @@ class FirewallAddress_model extends CI_Model {
 		$data = new StdClass();
 		if($resultSet->num_rows() > 0) {
 			$row = $resultSet->row();
-			$data = new FirewallAddressObject($row->code, $row->ip, $row->ipname, $row->type, $row->address);
+			$data = new FirewallAddressObject($row->code, $row->ipname, $row->type, $row->address);
 		}
 		
 		return $data;
