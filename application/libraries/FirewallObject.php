@@ -224,6 +224,7 @@ class FirewallObject implements JsonSerializable {
             'port' => $this->getPort(),
             'isVdom' => $this->getIsVdom(),
             'nameVdom' => $this->getNameVdom(),
+            'counter' => $this->getCounter(),
             'setupCommandTemplate' => $this->getSetupCommandTemplate(),
             'spesialCommandAddressTemplate' => $this->getSpesialCommandAddressTemplate(),
             'spesialCommandPortTemplate' => $this->getSpesialCommandPortTemplate()

@@ -93,6 +93,7 @@ class Firewall_model extends CI_Model {
 				'port' => $firewallObject->getPort(),
 				'is_vdom' => $firewallObject->getIsVdom(),
 				'vdom' => $firewallObject->getNameVdom(),
+				'counter' => $firewallObject->getCounter(),
 				'setup_command' => $firewallObject->getSetupCommandTemplate(),
 				'spesial_address_command' => $firewallObject->getSpesialCommandAddressTemplate(),
 				'spesial_port_command' => $firewallObject->getSpesialCommandPortTemplate()
