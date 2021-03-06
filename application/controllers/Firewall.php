@@ -104,7 +104,7 @@ class Firewall extends CI_Controller {
     public function load_request($requestNumber, $firewallCode)
     {
         $result = $this->firewallrequest_model->inquiry_detail($requestNumber, urldecode($firewallCode));
-        $this->setup_rule($result->RequestID, $result->bidirectional, $result->ipSource, $result->ipDestination, strpos($result->protocol, 'TCP') === false ? null : $result->port, strpos($result->protocol, 'udp') === false ? null : $result->port, urldecode($firewallCode));
+        $this->setup_rule($result->RequestID, $result->bidirectional, $result->ipSource, $result->ipDestination, strpos($result->protocol, 'TCP') === false ? null : $result->port, strpos($result->protocol, 'UDP') === false ? null : $result->port, urldecode($firewallCode));
     }
 
     public function save_file_address_object() {
@@ -858,7 +858,7 @@ class Firewall extends CI_Controller {
         $postArrNotFoundUdpPort = json_decode($this->input->post('arr_not_found_udpport'), true);
         $postAddressCommand = $this->input->post('address_command');
         $postPortCommand = $this->input->post('port_command');
-        $firewallObj = $this->firewall_model->find_single_entry($postFirewall);
+        $firewallObj = $this->firewall_model->find_single_entry_by_fwcode($postFirewall);
 
         if($postSetupCommand) {
             $resultSetupCommand = false;

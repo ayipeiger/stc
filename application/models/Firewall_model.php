@@ -52,6 +52,9 @@ class Firewall_model extends CI_Model {
 		$this->db->where('code', $code);
 		$resultSet = $this->db->get('firewall');
 
+		$stringQuery = "select ip, code, port, is_vdom, vdom, counter, setup_command, spesial_address_command, spesial_port_command from firewall where '$code' like CONCAT('%', code, '%')";
+		$resultSet = $this->db->query($stringQuery);
+
 		$data = new StdClass();
 		if($resultSet->num_rows() > 0) {
 			$row = $resultSet->row();
@@ -107,7 +110,7 @@ class Firewall_model extends CI_Model {
 			throw new RuntimeException ('Class is not instance of!');
 		}
 
-		$affectedRow = $this->db->update('firewall', array('counter' => $firewallObject->getCounter()+1), array('ip' => $firewallObject->getIp()));
+		$affectedRow = $this->db->update('firewall', array('counter' => $firewallObject->getCounter()+1), array('code' => $firewallObject->getCode()));
 		return boolval($affectedRow);
 	}
 

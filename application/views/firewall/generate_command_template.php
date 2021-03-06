@@ -4,7 +4,7 @@
 	<h5>Setup Command Template</h5>
 	<pre><code class="language-html" data-lang="html"><?=nl2br($firewall->getSetupCommandTemplate());?></code></pre>
 	<form id="form-execute" method="post" accept-charset="utf-8" action="<?=site_url('Firewall/execute_command_template')?>">
-		<input type="hidden" name="firewall" value="<?=$firewall->getIp();?>"/>
+		<input type="hidden" name="firewall" value="<?=$firewall->getCode();?>"/>
 		<input type="hidden" name="request_number" value="<?=$requestNumber?>"/>
 		<input type="hidden" name="setup_command" value="<?=$firewall->getSetupCommandTemplate()?>"/>
 		<button type="submit" name="submit" class="btn btn-warning btn-block btn-lg" value="execute">Execute</button>
@@ -25,7 +25,7 @@
 		<pre><code class="language-html" data-lang="html"><?=nl2br($firewall->getSpesialCommandPortTemplate());?></code></pre>
 	<?php endif; ?>
 	<form id="form-execute" method="post" accept-charset="utf-8" action="<?=site_url('Firewall/execute_command_template')?>">
-		<input type="hidden" name="firewall" value="<?=$firewall->getIp();?>"/>
+		<input type="hidden" name="firewall" value="<?=$firewall->getCode();?>"/>
 		<input type="hidden" name="request_number" value="<?=$requestNumber?>"/>
 		<input type="hidden" name="arr_not_found_ipsource" value='<?=json_encode($arrNotFoundIpSource)?>'/>
 		<input type="hidden" name="arr_not_found_ipdestination" value='<?=json_encode($arrNotFoundIpDestination)?>'/>
